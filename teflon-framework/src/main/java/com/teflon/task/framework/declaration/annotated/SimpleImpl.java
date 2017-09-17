@@ -1,0 +1,62 @@
+package com.teflon.task.core.impl2;
+
+import com.teflon.task.core.Interpreter;
+import com.teflon.task.core.Sink;
+import com.teflon.task.core.Source;
+import com.teflon.task.core.Task;
+
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * @author tushar.naik
+ * @version 1.0  16/09/17 - 12:26 AM
+ */
+@SourceDeclaration(emits = String.class)
+@InterpreterDeclaration(takes = String.class, emits = Integer.class)
+@SinkDeclaration(takes = Integer.class)
+public class SimpleImpl implements Source<String>, Interpreter<String, Integer>, Sink<Integer> {
+    int i = 0;
+
+    @Override
+    public Integer interpret(String line) {
+        return line.hashCode();
+    }
+
+    @Override
+    public void init(Task init) throws Exception {
+
+    }
+
+    @Override
+    public String getInput() throws Exception {
+        if (i++ < 30)
+            return "asdf";
+        return null;
+    }
+
+    @Override
+    public void init() throws Exception {
+        System.out.println("init = ");
+    }
+
+    @Override
+    public void sink(Integer integer) {
+        System.out.println("integer = " + integer);
+    }
+
+    @Override
+    public void sink(List<Integer> integers) {
+        System.out.println("integers = " + integers);
+    }
+
+    @Override
+    public void close() throws IOException {
+
+    }
+
+    @Override
+    public void abort() {
+
+    }
+}
