@@ -1,8 +1,7 @@
-package com.teflon.task.core.factory;
+package com.teflon.task.framework.factory;
 
-import com.teflon.task.core.core.InstanceFactory;
-import com.teflon.task.core.error.ErrorCode;
-import com.teflon.task.core.error.TeflonError;
+import com.teflon.task.framework.error.ErrorCode;
+import com.teflon.task.framework.error.TeflonError;
 
 import java.lang.reflect.InvocationTargetException;
 

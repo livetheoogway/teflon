@@ -1,4 +1,8 @@
-package com.teflon.task.core;
+package com.teflon.task.framework.declaration.annotated;
+
+import com.teflon.task.framework.core.Interpreter;
+import com.teflon.task.framework.core.Sink;
+import com.teflon.task.framework.core.Source;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

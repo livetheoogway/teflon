@@ -1,19 +1,17 @@
-package com.teflon.task.core;
+package com.teflon.task.framework;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.AbstractModule;
-import com.teflon.task.core.container.MapContainer;
-import com.teflon.task.core.core.ExecutionFactory;
-import com.teflon.task.core.core.MetaInfo;
-import com.teflon.task.core.error.ErrorCode;
-import com.teflon.task.core.error.TeflonError;
-import com.teflon.task.core.factory.FactoryProvider;
-import com.teflon.task.core.factory.InjectedFactoryProvider;
-import com.teflon.task.core.factory.ReflectionFactoryProvider;
-import com.teflon.task.core.impl2.InterpreterDeclaration;
-import com.teflon.task.core.impl2.SimpleImpl;
-import com.teflon.task.core.impl2.SinkDeclaration;
-import com.teflon.task.core.impl2.SourceDeclaration;
+import com.teflon.task.framework.container.MapContainer;
+import com.teflon.task.framework.core.*;
+import com.teflon.task.framework.core.meta.MetaInfo;
+import com.teflon.task.framework.declaration.TaskActorDeclaration;
+import com.teflon.task.framework.declaration.annotated.InterpreterDeclaration;
+import com.teflon.task.framework.declaration.annotated.SinkDeclaration;
+import com.teflon.task.framework.declaration.annotated.SourceDeclaration;
+import com.teflon.task.framework.error.ErrorCode;
+import com.teflon.task.framework.error.TeflonError;
+import com.teflon.task.framework.factory.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -78,18 +76,5 @@ public final class TaskScheduler {
         } else {
             return new ReflectionFactoryProvider();
         }
-    }
-
-
-    public static void main(String[] args) {
-        TaskScheduler sample = TaskScheduler.builder().declaration(TaskActorDeclaration.builder()
-                                                                                       .name("sample")
-                                                                                       .source(SimpleImpl.class)
-                                                                                       .interpreter(SimpleImpl.class)
-                                                                                       .sink(SimpleImpl.class)
-                                                                                       .build())
-                                            .build();
-        sample.trigger(() -> "sample");
-
     }
 }

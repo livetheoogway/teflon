@@ -1,4 +1,4 @@
-package com.teflon.task.core.error;
+package com.teflon.task.framework.error;
 
 import lombok.Getter;
 

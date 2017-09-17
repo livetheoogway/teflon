@@ -1,4 +1,4 @@
-package com.teflon.task.core.core;
+package com.teflon.task.framework.factory;
 
 /**
  * @author tushar.naik

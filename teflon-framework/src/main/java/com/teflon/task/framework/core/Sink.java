@@ -1,4 +1,4 @@
-package com.teflon.task.core;
+package com.teflon.task.framework.core;
 
 import java.util.List;
 

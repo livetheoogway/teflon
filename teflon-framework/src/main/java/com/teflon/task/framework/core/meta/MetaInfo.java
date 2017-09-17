@@ -1,8 +1,9 @@
-package com.teflon.task.core.core;
+package com.teflon.task.framework.core.meta;
 
-import com.teflon.task.core.Interpreter;
-import com.teflon.task.core.Sink;
-import com.teflon.task.core.Source;
+import com.teflon.task.framework.core.Interpreter;
+import com.teflon.task.framework.core.Sink;
+import com.teflon.task.framework.core.Source;
+import com.teflon.task.framework.factory.InstanceFactory;
 import lombok.Builder;
 import lombok.Data;
 

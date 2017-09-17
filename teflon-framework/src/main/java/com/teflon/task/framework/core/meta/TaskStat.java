@@ -1,4 +1,4 @@
-package com.teflon.task.core;
+package com.teflon.task.framework.core.meta;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

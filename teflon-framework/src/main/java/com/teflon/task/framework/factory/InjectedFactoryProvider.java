@@ -1,9 +1,8 @@
-package com.teflon.task.core.factory;
+package com.teflon.task.framework.factory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.teflon.task.core.core.InstanceFactory;
 import lombok.Getter;
 
 /**

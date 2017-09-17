@@ -1,8 +1,10 @@
-package com.teflon.task.core;
+package com.teflon.task.framework;
 
 import com.google.common.collect.Lists;
-import com.teflon.task.core.error.ErrorCode;
-import com.teflon.task.core.error.TeflonError;
+import com.teflon.task.framework.core.*;
+import com.teflon.task.framework.core.meta.TaskStat;
+import com.teflon.task.framework.error.ErrorCode;
+import com.teflon.task.framework.error.TeflonError;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 

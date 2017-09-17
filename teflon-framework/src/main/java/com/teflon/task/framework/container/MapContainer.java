@@ -1,8 +1,8 @@
-package com.teflon.task.core.container;
+package com.teflon.task.framework.container;
 
 import com.google.common.collect.Maps;
-import com.teflon.task.core.error.ErrorCode;
-import com.teflon.task.core.error.TeflonError;
+import com.teflon.task.framework.error.ErrorCode;
+import com.teflon.task.framework.error.TeflonError;
 
 import java.util.Map;
 

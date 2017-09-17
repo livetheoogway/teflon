@@ -1,9 +1,9 @@
-package com.teflon.task.core.impl2;
+package com.teflon.task.framework.declaration.annotated;
 
-import com.teflon.task.core.Interpreter;
-import com.teflon.task.core.Sink;
-import com.teflon.task.core.Source;
-import com.teflon.task.core.Task;
+import com.teflon.task.framework.core.Interpreter;
+import com.teflon.task.framework.core.Sink;
+import com.teflon.task.framework.core.Source;
+import com.teflon.task.framework.core.Task;
 
 import java.io.IOException;
 import java.util.List;
