@@ -4,6 +4,7 @@ import com.teflon.task.framework.core.Interpreter;
 import com.teflon.task.framework.core.Sink;
 import com.teflon.task.framework.core.Source;
 import com.teflon.task.framework.core.Task;
+import com.teflon.task.framework.factory.FactoryType;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +16,10 @@ import java.util.List;
 @SourceDeclaration(emits = String.class)
 @InterpreterDeclaration(takes = String.class, emits = Integer.class)
 @SinkDeclaration(takes = Integer.class)
+@TaskDeclaration(name = "simple", source = SimpleImpl.class,
+        interpreter = SimpleImpl.class,
+        sink = SimpleImpl.class,
+        factoryType = FactoryType.DEFAULT_CONSTRUCTOR_REFLECTION)
 public class SimpleImpl implements Source<String>, Interpreter<String, Integer>, Sink<Integer> {
     int i = 0;
 
