@@ -18,5 +18,7 @@ public class TaskActorDeclaration {
     private Class<? extends Source> source;
     private Class<? extends Interpreter> interpreter;
     private Class<? extends Sink> sink;
-    private FactoryType factoryType;
+
+    @Builder.Default
+    private FactoryType factoryType = FactoryType.DEFAULT_CONSTRUCTOR_REFLECTION;
 }

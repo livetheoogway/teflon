@@ -13,7 +13,7 @@ public abstract class BatchedSource<Input> implements Source<Input> {
 
     private Queue<Input> hitQueue;
 
-    public BatchedSource() {
+    protected BatchedSource() {
         this.hitQueue = new LinkedList<>();
     }
 
