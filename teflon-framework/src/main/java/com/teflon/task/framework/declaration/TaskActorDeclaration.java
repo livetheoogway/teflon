@@ -21,4 +21,7 @@ public class TaskActorDeclaration {
 
     @Builder.Default
     private FactoryType factoryType = FactoryType.DEFAULT_CONSTRUCTOR_REFLECTION;
+
+    @Builder.Default
+    private int batchSize = 1;
 }

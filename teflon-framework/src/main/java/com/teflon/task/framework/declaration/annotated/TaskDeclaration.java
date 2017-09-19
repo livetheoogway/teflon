@@ -23,4 +23,6 @@ public @interface TaskDeclaration {
     String name();
 
     FactoryType factoryType();
+
+    int batchSize() default 1;
 }

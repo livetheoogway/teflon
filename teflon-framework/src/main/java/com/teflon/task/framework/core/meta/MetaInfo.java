@@ -17,4 +17,5 @@ public class MetaInfo {
     private InstanceFactory<? extends Source> sourceInstanceFactory;
     private InstanceFactory<? extends Interpreter> interpreterInstanceFactory;
     private InstanceFactory<? extends Sink> sinkInstanceFactory;
+    private int batchSize;
 }

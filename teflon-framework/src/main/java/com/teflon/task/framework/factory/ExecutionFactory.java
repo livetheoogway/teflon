@@ -21,6 +21,7 @@ public class ExecutionFactory<T, U> implements InstanceFactory<TaskExecutor<T, U
                 .source((Source<T>) metaInfo.getSourceInstanceFactory().newInstance())
                 .interpreter((Interpreter<T, U>) metaInfo.getInterpreterInstanceFactory().newInstance())
                 .sink((Sink<U>) metaInfo.getSinkInstanceFactory().newInstance())
+                .batchSize(metaInfo.getBatchSize())
                 .build();
     }
 }

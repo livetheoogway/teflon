@@ -8,6 +8,8 @@ import com.teflon.task.framework.declaration.annotated.InterpreterDeclaration;
 import com.teflon.task.framework.declaration.annotated.SinkDeclaration;
 import com.teflon.task.framework.declaration.annotated.SourceDeclaration;
 
+import javax.annotation.Nullable;
+
 /**
  * @author tushar.naik
  * @version 1.0  19/09/17 - 7:57 PM
@@ -34,6 +36,12 @@ public interface Verifier {
         }
         if (interpreterDeclaration.emits() != sinkDeclaration.takes()) {
             throw new TeflonError(ErrorCode.INVALID_DECLARATION, "Sink must take what the Interpreter provides");
+        }
+    }
+
+    static void checkExpression(boolean expression, @Nullable Object errorMessage) {
+        if (!expression) {
+            throw new TeflonError(ErrorCode.INVALID_DECLARATION, String.valueOf(errorMessage));
         }
     }
 

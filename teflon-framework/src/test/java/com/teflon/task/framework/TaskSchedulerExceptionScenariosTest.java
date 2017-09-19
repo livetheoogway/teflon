@@ -27,8 +27,6 @@ public class TaskSchedulerExceptionScenariosTest {
     public void testNullInterpreter() throws Exception {
         TaskScheduler.builder().declaration(TaskActorDeclaration.builder().name("number-generator")
                                                                 .source(NumberStreamGenerator.class)
-                                                                .interpreter(NumberStreamGenerator.class)
-                                                                .sink(ConsoleSink.class)
                                                                 .build()).build();
     }
 

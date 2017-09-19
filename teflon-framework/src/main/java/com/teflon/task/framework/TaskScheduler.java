@@ -1,6 +1,5 @@
 package com.teflon.task.framework;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import com.teflon.task.framework.container.MapContainer;
@@ -78,6 +77,7 @@ public final class TaskScheduler {
                                               .source(taskDeclaration.source())
                                               .interpreter(taskDeclaration.interpreter())
                                               .sink(taskDeclaration.sink())
+                                              .batchSize(taskDeclaration.batchSize())
                                               .build();
                 MetaInfo metaInfo = getMetaInfo(abstractModule, actorDeclaration);
                 mContainer.register(actorDeclaration.getName(), metaInfo);
@@ -93,11 +93,12 @@ public final class TaskScheduler {
                        .sourceInstanceFactory(factoryProvider.instanceFactory(k.getSource()))
                        .interpreterInstanceFactory(factoryProvider.instanceFactory(k.getInterpreter()))
                        .sinkInstanceFactory(factoryProvider.instanceFactory(k.getSink()))
+                       .batchSize(k.getBatchSize())
                        .build();
     }
 
     private FactoryProvider factoryProvider(FactoryType factoryType, AbstractModule abstractModule) {
-        Preconditions.checkArgument(factoryType != FactoryType.INJECTION || abstractModule != null,
+        Verifier.checkExpression(factoryType != FactoryType.INJECTION || abstractModule != null,
                                     "AbstractModule may not be null");
         if (factoryType == FactoryType.INJECTION) {
             return new InjectedFactoryProvider(abstractModule);
