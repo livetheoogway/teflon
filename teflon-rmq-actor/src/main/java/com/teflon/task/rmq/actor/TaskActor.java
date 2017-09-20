@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teflon.task.framework.TaskScheduler;
 import com.teflon.task.framework.core.Task;
 import io.dropwizard.actors.actor.Actor;
-import io.dropwizard.actors.actor.ActorConfig;
 import io.dropwizard.actors.connectivity.RMQConnection;
 import io.dropwizard.actors.retry.RetryStrategyFactory;
 import lombok.Builder;
 
-import java.util.Set;
+import java.util.Collections;
 
 /**
  * @author tushar.naik
@@ -20,11 +19,10 @@ public class TaskActor<T extends Enum<T>, M extends Task> extends Actor<T, M> {
     private TaskScheduler taskScheduler;
 
     @Builder
-    public TaskActor(T t, TaskScheduler taskScheduler, ActorConfig config,
+    public TaskActor(T t, TaskScheduler taskScheduler, TeflonConfig teflonConfig,
                      RMQConnection connection, ObjectMapper mapper,
-                     RetryStrategyFactory retryStrategyFactory,
-                     Class<? extends M> clazz, Set<Class<?>> droppedExceptionTypes) {
-        super(t, config, connection, mapper, retryStrategyFactory, clazz, droppedExceptionTypes);
+                     Class<? extends M> clazz) {
+        super(t, teflonConfig.getActorConfig(), connection, mapper, new RetryStrategyFactory(), clazz, Collections.emptySet());
         this.taskScheduler = taskScheduler;
     }
 
