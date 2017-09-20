@@ -11,10 +11,6 @@ import java.util.List;
  */
 @Slf4j
 public class LogSink<T> implements Sink<T> {
-    @Override
-    public void init() throws Exception {
-
-    }
 
     @Override
     public void sink(T t) {
@@ -24,15 +20,5 @@ public class LogSink<T> implements Sink<T> {
     @Override
     public void sink(List<T> ts) {
         log.info(ts.toString());
-    }
-
-    @Override
-    public void close() throws Exception {
-
-    }
-
-    @Override
-    public void abort() {
-
     }
 }

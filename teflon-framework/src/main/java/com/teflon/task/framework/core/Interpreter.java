@@ -4,14 +4,12 @@ package com.teflon.task.framework.core;
  * @author tushar.naik
  * @version 1.0  10/08/17 - 6:05 PM
  */
-@FunctionalInterface
-public interface Interpreter<Input, Output> {
-
+public interface Interpreter<Input, Output> extends Unit {
     /**
-     * individual string can be used to interpret
+     * interpret an intput into some form of an Output
      *
-     * @param line any string
+     * @param input any input
      * @return interpreted value
      */
-    Output interpret(Input line);
+    Output interpret(Input input);
 }

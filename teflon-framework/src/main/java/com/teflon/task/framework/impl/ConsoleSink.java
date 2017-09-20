@@ -11,10 +11,6 @@ import java.util.List;
  */
 @SinkDeclaration(takes = String.class)
 public class ConsoleSink implements Sink<String> {
-    @Override
-    public void init() throws Exception {
-
-    }
 
     @Override
     public void sink(String item) {
@@ -24,15 +20,5 @@ public class ConsoleSink implements Sink<String> {
     @Override
     public void sink(List<String> items) {
         System.out.println(items);
-    }
-
-    @Override
-    public void close() throws Exception {
-
-    }
-
-    @Override
-    public void abort() {
-
     }
 }

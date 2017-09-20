@@ -46,19 +46,20 @@ public class TaskExecutor<Input, Output> {
      * for a given input, inits the Source and Sink.
      * Streams every Input, Interprets it to an Output, and then sinks the final Output
      *
-     * @param init            input to init the source
+     * @param task            task to be initiated
      * @param updatesConsumer something that consumes regular updates. consumer is called when the number of inputs reaches batch size
      * @param isCancelled     return true if the task was cancelled externally. Execution will stop immediately (during the next batch)
      * @return <code>true</code> if successfully executed the task
      * @throws TeflonError any error during task execution
      */
-    public boolean initiate(Task init, Consumer<TaskStat> updatesConsumer,
+    public boolean initiate(Task task, Consumer<TaskStat> updatesConsumer,
                             BooleanSupplier isCancelled) throws TeflonError {
         log.info("Starting to populate all values from source...");
         taskStat.start();
         try {
-            source.init(init);
-            sink.init();
+            source.init(task);
+            interpreter.init(task);
+            sink.init(task);
             Input input;
             List<Output> outputs = Lists.newArrayListWithCapacity(batchSize);
             while ((input = source.getInput()) != null && (total % batchSize != 0 || !isCancelled.getAsBoolean())) {
@@ -76,7 +77,7 @@ public class TaskExecutor<Input, Output> {
                     updatesConsumer.accept(taskStat);
                 }
                 if (total % batchSize == 0) {
-                    log.info("Task:{} total:{} status:{}", init, total, taskStat);
+                    log.info("Task:{} total:{} status:{}", task, total, taskStat);
                 }
             }
             if (!outputs.isEmpty()) {
@@ -84,7 +85,7 @@ public class TaskExecutor<Input, Output> {
                 outputs.clear();
                 taskStat.setCountTotal(total);
                 taskStat.setCountOutputSinked(count);
-                log.info("Task:{} total:{} status:{}", init, total, taskStat);
+                log.info("Task:{} total:{} status:{}", task, total, taskStat);
                 updatesConsumer.accept(taskStat);
             }
             taskStat.end();
@@ -103,12 +104,14 @@ public class TaskExecutor<Input, Output> {
             log.error("!!! \\\\_(- -)_//  Ran into problems while running task. Aborting.. ", e);
             taskStat.end();
             source.abort();
+            interpreter.abort();
             sink.abort();
             throw new TeflonError(ErrorCode.INCOMPATIBLE_TYPES_ERROR, e.getMessage());
         } catch (Exception e) {
             log.error("!!! \\\\_(- -)_//  Ran into problems while running task. Aborting.. ", e);
             taskStat.end();
             source.abort();
+            interpreter.abort();
             sink.abort();
             throw TeflonError.propagate(e);
         }
