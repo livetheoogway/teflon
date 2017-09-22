@@ -19,15 +19,13 @@ public class TaskSchedulerExceptionScenariosTest {
 
     @Test(expected = TeflonError.class)
     public void testNullSource() throws Exception {
-        TaskScheduler.builder()
-                     .declaration(TaskActorDeclaration.builder().task(NumberGeneratorTask.class).build())
-                     .build();
+        TaskScheduler.builder().declaration(TaskActorDeclaration.builder().name("number-generator").build()).build();
     }
 
 
     @Test(expected = TeflonError.class)
     public void testNullInterpreter() throws Exception {
-        TaskScheduler.builder().declaration(TaskActorDeclaration.builder().task(NumberGeneratorTask.class)
+        TaskScheduler.builder().declaration(TaskActorDeclaration.builder().name("number-generator")
                                                                 .source(NumberStreamGenerator.class)
                                                                 .build()).build();
     }
@@ -40,8 +38,7 @@ public class TaskSchedulerExceptionScenariosTest {
     @Test
     public void testDefaultConstructorError() throws Exception {
         TaskScheduler taskScheduler = TaskScheduler.builder()
-                                                   .declaration(TaskActorDeclaration.builder()
-                                                                                    .task(NumberGeneratorTask.class)
+                                                   .declaration(TaskActorDeclaration.builder().name("number-generator")
                                                                                     .source(NumberStreamGenerator.class)
                                                                                     .interpreter(NumberStreamGenerator.class)
                                                                                     .sink(ConsoleSink.class)

@@ -3,14 +3,12 @@ package com.teflon.task.rmq.actor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teflon.task.framework.TaskScheduler;
 import com.teflon.task.framework.core.Task;
-import com.teflon.task.framework.core.meta.TaskStat;
 import io.dropwizard.actors.actor.Actor;
 import io.dropwizard.actors.connectivity.RMQConnection;
 import io.dropwizard.actors.retry.RetryStrategyFactory;
 import lombok.Builder;
 
 import java.util.Collections;
-import java.util.function.Consumer;
 
 /**
  * @author tushar.naik
@@ -28,12 +26,12 @@ public class TaskActor<T extends Enum<T>, M extends Task> extends Actor<T, M> {
         this.taskScheduler = taskScheduler;
     }
 
-    public Consumer<TaskStat> statConsumer() {
-        return taskStat -> { };
+    @Override
+    protected boolean handle(M message) throws Exception {
+        return taskScheduler.trigger(message);
     }
 
-    @Override
-    protected final boolean handle(M message) throws Exception {
-        return taskScheduler.trigger(message, statConsumer());
+    public void trigger(M task) throws Exception {
+        publish(task);
     }
 }

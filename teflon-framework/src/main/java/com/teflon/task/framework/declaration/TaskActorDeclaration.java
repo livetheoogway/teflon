@@ -3,7 +3,6 @@ package com.teflon.task.framework.declaration;
 import com.teflon.task.framework.core.Interpreter;
 import com.teflon.task.framework.core.Sink;
 import com.teflon.task.framework.core.Source;
-import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.factory.FactoryType;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TaskActorDeclaration {
-    private Class<? extends Task> task;
+    private String name;
     private Class<? extends Source> source;
     private Class<? extends Interpreter> interpreter;
     private Class<? extends Sink> sink;
