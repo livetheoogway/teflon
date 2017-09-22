@@ -1,0 +1,7 @@
+maven-build:
+  image: maven:3-jdk-8
+  stage: build
+  script: "mvn clean deploy -DskipTests -DrepositoryId=phonepe-snapshots"
+  artifacts:
+    paths:
+      - target/*.jar
