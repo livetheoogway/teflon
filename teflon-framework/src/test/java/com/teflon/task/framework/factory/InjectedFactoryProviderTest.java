@@ -1,6 +1,7 @@
 package com.teflon.task.framework.factory;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
 import com.google.inject.Provides;
 import com.teflon.task.framework.TaskScheduler;
 import com.teflon.task.framework.core.meta.TaskStat;
@@ -20,7 +21,7 @@ public class InjectedFactoryProviderTest {
         TaskScheduler taskScheduler
                 = TaskScheduler.builder()
                                .classPath("com.teflon.task.framework.factory")
-                               .abstractModule(new AbstractModule() {
+                               .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
                                    @Override
                                    protected void configure() {
                                    }
@@ -29,7 +30,7 @@ public class InjectedFactoryProviderTest {
                                    public NumberStreamGenerator getSimpleImpl() {
                                        return new NumberStreamGenerator();
                                    }
-                               })
+                               }))
                                .build();
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
         Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 10), taskStat::set));

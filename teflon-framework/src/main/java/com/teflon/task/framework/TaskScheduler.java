@@ -1,7 +1,7 @@
 package com.teflon.task.framework;
 
 import com.google.common.base.Strings;
-import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.teflon.task.framework.container.MapContainer;
 import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.MetaInfo;
@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author tushar.naik
@@ -32,9 +33,43 @@ public final class TaskScheduler {
 
     private MapContainer<MetaInfo> mContainer;
 
-    private TaskScheduler(MapContainer<MetaInfo> mContainer) {
+    public TaskScheduler() {
+        this(new MapContainer<>());
+    }
+
+    public TaskScheduler(MapContainer<MetaInfo> mContainer) {
         this.mContainer = mContainer;
     }
+
+    @Builder
+    public TaskScheduler(@Singular List<TaskActorDeclaration> declarations,
+                         Supplier<Injector> injectorProvider, String classPath) {
+        mContainer = new MapContainer<>();
+        declarations.forEach(k -> {
+            MetaInfo metaInfo = getMetaInfo(injectorProvider, k);
+            mContainer.register(k.getName(), metaInfo);
+        });
+        if (!Strings.isNullOrEmpty(classPath)) {
+            Reflections reflections = new Reflections(classPath);
+            Set<Class<?>> taskDeclarations = reflections.getTypesAnnotatedWith(TaskDeclaration.class);
+            taskDeclarations.forEach(k -> {
+                TaskDeclaration taskDeclaration = k.getAnnotation(TaskDeclaration.class);
+                TaskActorDeclaration actorDeclaration
+                        = TaskActorDeclaration.builder()
+                                              .name(taskDeclaration.name())
+                                              .factoryType(taskDeclaration.factoryType())
+                                              .source(taskDeclaration.source())
+                                              .interpreter(taskDeclaration.interpreter())
+                                              .sink(taskDeclaration.sink())
+                                              .batchSize(taskDeclaration.batchSize())
+                                              .build();
+                MetaInfo metaInfo = getMetaInfo(injectorProvider, actorDeclaration);
+                mContainer.register(actorDeclaration.getName(), metaInfo);
+            });
+        }
+        log.info("Registered tasks:" + mContainer.keys());
+    }
+
 
     public boolean trigger(Task task) throws TeflonError {
         return trigger(task, t -> {
@@ -57,38 +92,9 @@ public final class TaskScheduler {
         return new ExecutionFactory<>(metaInfo).newInstance().initiate(task, taskStatConsumer, isCancelled);
     }
 
-    @Builder
-    public TaskScheduler(@Singular List<TaskActorDeclaration> declarations,
-                         AbstractModule abstractModule, String classPath) {
-        mContainer = new MapContainer<>();
-        declarations.forEach(k -> {
-            MetaInfo metaInfo = getMetaInfo(abstractModule, k);
-            mContainer.register(k.getName(), metaInfo);
-        });
-        if (!Strings.isNullOrEmpty(classPath)) {
-            Reflections reflections = new Reflections(classPath);
-            Set<Class<?>> taskDeclarations = reflections.getTypesAnnotatedWith(TaskDeclaration.class);
-            taskDeclarations.forEach(k -> {
-                TaskDeclaration taskDeclaration = k.getAnnotation(TaskDeclaration.class);
-                TaskActorDeclaration actorDeclaration
-                        = TaskActorDeclaration.builder()
-                                              .name(taskDeclaration.name())
-                                              .factoryType(taskDeclaration.factoryType())
-                                              .source(taskDeclaration.source())
-                                              .interpreter(taskDeclaration.interpreter())
-                                              .sink(taskDeclaration.sink())
-                                              .batchSize(taskDeclaration.batchSize())
-                                              .build();
-                MetaInfo metaInfo = getMetaInfo(abstractModule, actorDeclaration);
-                mContainer.register(actorDeclaration.getName(), metaInfo);
-            });
-        }
-        log.info("Registered tasks:" + mContainer.keys());
-    }
-
-    private MetaInfo getMetaInfo(AbstractModule abstractModule, TaskActorDeclaration k) {
+    private MetaInfo getMetaInfo(Supplier<Injector> injectorProvider, TaskActorDeclaration k) {
         Verifier.verify(k);
-        FactoryProvider factoryProvider = factoryProvider(k.getFactoryType(), abstractModule);
+        FactoryProvider factoryProvider = factoryProvider(k.getFactoryType(), injectorProvider);
         return MetaInfo.builder()
                        .sourceInstanceFactory(factoryProvider.instanceFactory(k.getSource()))
                        .interpreterInstanceFactory(factoryProvider.instanceFactory(k.getInterpreter()))
@@ -97,11 +103,11 @@ public final class TaskScheduler {
                        .build();
     }
 
-    private FactoryProvider factoryProvider(FactoryType factoryType, AbstractModule abstractModule) {
-        Verifier.checkExpression(factoryType != FactoryType.INJECTION || abstractModule != null,
+    private FactoryProvider factoryProvider(FactoryType factoryType, Supplier<Injector> injectorProvider) {
+        Verifier.checkExpression(factoryType != FactoryType.INJECTION || injectorProvider != null,
                                     "AbstractModule may not be null");
         if (factoryType == FactoryType.INJECTION) {
-            return new InjectedFactoryProvider(abstractModule);
+            return new InjectedFactoryProvider(injectorProvider);
         } else {
             return new ReflectionFactoryProvider();
         }

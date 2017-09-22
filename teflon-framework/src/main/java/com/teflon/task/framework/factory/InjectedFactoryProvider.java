@@ -1,25 +1,20 @@
 package com.teflon.task.framework.factory;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+
+import java.util.function.Supplier;
 
 /**
  * @author tushar.naik
  * @version 1.0  15/09/17 - 9:29 PM
  */
+@AllArgsConstructor
 public class InjectedFactoryProvider implements FactoryProvider {
-
-    @Getter
-    private Injector injector;
-
-    public InjectedFactoryProvider(AbstractModule abstractModule) {
-        injector = Guice.createInjector(abstractModule);
-    }
+    private Supplier<Injector> injectorProvider;
 
     @Override
     public <T> InstanceFactory<T> instanceFactory(Class<T> clazz) {
-        return () -> injector.getInstance(clazz);
+        return () -> injectorProvider.get().getInstance(clazz);
     }
 }
