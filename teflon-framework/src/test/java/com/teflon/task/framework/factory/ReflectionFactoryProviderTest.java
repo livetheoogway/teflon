@@ -17,7 +17,8 @@ public class ReflectionFactoryProviderTest {
     @Test
     public void testDefaultConstructor() throws Exception {
         TaskScheduler taskScheduler = TaskScheduler.builder()
-                                                   .declaration(TaskActorDeclaration.builder().name("number-generator")
+                                                   .declaration(TaskActorDeclaration.builder()
+                                                                                    .task(NumberGeneratorTask.class)
                                                                                     .source(NumberStreamGenerator.class)
                                                                                     .interpreter(NumberStreamGenerator.class)
                                                                                     .sink(ConsoleSink.class)

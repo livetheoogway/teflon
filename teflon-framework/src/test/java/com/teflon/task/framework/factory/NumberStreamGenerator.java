@@ -18,7 +18,7 @@ import java.io.IOException;
 @SourceDeclaration(emits = Integer.class)
 @InterpreterDeclaration(takes = Integer.class, emits = String.class)
 @SinkDeclaration(takes = Integer.class)
-@TaskDeclaration(name = "number-generator", source = NumberStreamGenerator.class,
+@TaskDeclaration(task = NumberGeneratorTask.class, source = NumberStreamGenerator.class,
         interpreter = NumberStreamGenerator.class,
         sink = ConsoleSink.class,
         factoryType = FactoryType.INJECTION)
