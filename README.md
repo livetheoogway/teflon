@@ -13,7 +13,7 @@ A framework that has the following features:
 
 ### Maven Dependency
 * Use the following maven dependency for bare minimal framework:
-```
+```xml
 <dependency>
     <groupId>com.phonepe.teflon</groupId>
     <artifactId>teflon-framework</artifactId>
@@ -21,7 +21,7 @@ A framework that has the following features:
 </dependency>
 ```
 * Use the following maven dependency for actor based Scheduler:
-```
+```xml
 <dependency>
     <groupId>com.phonepe.teflon</groupId>
     <artifactId>teflon-rmq-actor</artifactId>
@@ -51,8 +51,8 @@ When a task is being executed -
 4. The Interpreted elements are then passed onto the <b>Sink</b> for consumption
 5. All the while, <b>Stats</b> are collected as to how many elements were processed, time taken for execution, etc. 
 
-###Usage
-#####Annotations
+### Usage
+##### Annotations
 Define an implementation of ```Source.java```
 ```java
     @SourceDeclaration(emits = Integer.class)
@@ -66,7 +66,7 @@ Define an implementation of ```Source.java```
         }
     }
 ```
-Define an implementation of ```Interpreter.java```
+Define an ```Interpreter```
 ```java
     @InterpreterDeclaration(takes = Integer.class, emits = String.class)
     public class IterationInterpreter implements Interpreter<Integer, String> {
@@ -76,7 +76,7 @@ Define an implementation of ```Interpreter.java```
         }
     }
 ```
-Define an implementation of ```Sink.java```
+Define a ```Sink```
 ```java
     @SinkDeclaration(takes = String.class)
     public class ConsoleSink implements Sink<String> {
@@ -86,7 +86,7 @@ Define an implementation of ```Sink.java```
         }
     }
 ```
-An finally a Task Declaration
+An finally a ```TaskDeclaration```
 ```java
     @TaskDeclaration(
             name = "number-generator", 
@@ -102,7 +102,7 @@ An finally a Task Declaration
         ...
     }
 ```
-A Scheduler that will  
+Build A <b>Scheduler</b> that will allow you to trigger the task  
 ```java
 TaskScheduler taskScheduler = TaskScheduler.builder()
                                .classPath("com.teflon.task.framework.factory")
@@ -111,6 +111,6 @@ TaskScheduler taskScheduler = TaskScheduler.builder()
 taskScheduler.trigger(new SomeTask());
 ```
 
-#####TODOs
+##### TODOs
 - Queued Execution of Tasks using distributed zookeeper queues
 - 
