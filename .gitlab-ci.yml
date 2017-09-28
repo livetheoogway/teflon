@@ -23,11 +23,11 @@ test:
   stage: test
   script:
     - mvn $MAVEN_CLI_OPTS clean jacoco:prepare-agent test jacoco:report
+    - cat teflon-framework/target/site/jacoco/index.html
 
 deploy:
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS deploy -DskipTests
-    - cat teflon-framework/target/site/jacoco/index.html
   only:
     - master
