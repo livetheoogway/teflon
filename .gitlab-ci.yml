@@ -14,7 +14,7 @@ cache:
     - .m2/repository/
     - target/
 
-build:
+compile:
   stage: build
   script:
     - mvn $MAVEN_CLI_OPTS compile
@@ -22,11 +22,12 @@ build:
 test:
   stage: test
   script:
-    - mvn $MAVEN_CLI_OPTS test
+    - mvn $MAVEN_CLI_OPTS clean jacoco:prepare-agent test jacoco:report
 
 deploy:
   stage: deploy
   script:
     - mvn $MAVEN_CLI_OPTS deploy -DskipTests
+    - cat teflon-framework/target/site/jacoco/index.html
   only:
     - master
