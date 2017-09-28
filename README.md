@@ -13,7 +13,7 @@ A framework that has the following features:
 
 ### Maven Dependency
 * Use the following maven dependency for bare minimal framework:
-```xml
+```
 <dependency>
     <groupId>com.phonepe.teflon</groupId>
     <artifactId>teflon-framework</artifactId>
@@ -21,13 +21,13 @@ A framework that has the following features:
 </dependency>
 ```
 * Use the following maven dependency for actor based Scheduler:
-```xml
+```
 <dependency>
     <groupId>com.phonepe.teflon</groupId>
     <artifactId>teflon-rmq-actor</artifactId>
     <version>1.0-SNAPSHOT</version>
 </dependency>
-```
+``` 
 
 ### Use-case
 You will find this framework useful if you:
