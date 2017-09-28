@@ -3,4 +3,114 @@
 [![coverage report](https://gitlab.phonepe.com/Naik/teflon/badges/master/coverage.svg)](https://gitlab.phonepe.com/Naik/teflon/commits/master)
 
 
-#### Task Execution Framework with Little Orchestration Needed 
+#### Task Execution Framework with Little Orchestration Needed aka TEFLON 
+
+A framework that has the following features:
+- Registration of a bunch of Task Orchestration flows of execution during startup.
+- Synchronous execution of a Task
+- Asynchronous execution, that will schedule the Task, based on the Orchestration registered
+
+
+### Maven Dependency
+* Use the following maven dependency for bare minimal framework:
+```
+<dependency>
+    <groupId>com.phonepe.teflon</groupId>
+    <artifactId>teflon-framework</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+* Use the following maven dependency for actor based Scheduler:
+```
+<dependency>
+    <groupId>com.phonepe.teflon</groupId>
+    <artifactId>teflon-rmq-actor</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+### Use-case
+You will find this framework useful if you:
+1. prefer to visualize any piece of work as a <b>Task</b>
+2. want to divide the <b>Task</b> into mutually exclusive components
+3. Want to mix, match, and more importantly, reuse components of one Task, in another <b>Task</b>  
+
+
+#### TaskDeclaration
+A TaskDeclaration is composed of the following Components:
+> 1. Name - The name that is going to uniquely identify the declaration. The declaration chosen while executing a <b>Task</b>, will depend on the name of the <b>Task</b> 
+> 1. <b>Source</b> - A source that emits an Input / stream of Inputs
+> 2. <b>Interpreter</b> - The interpreter that takes the <b>Input from the <b>Source and emits an Output
+> 3. <b>Sink</b> - A sink that consumes the <b>Output</b>
+
+#### Execution of a <b>Task</b>
+When a task is being executed -
+1. <b>Source</b>, <b>Interpreter</b>, <b>Sink</b> are initiated.
+2. <b>Inputs</b> from <b>Source</b> are serially streamed (individual or batched)
+3. Batches are then passed onto the <b>Interpreter</b>
+4. The Interpreted elements are then passed onto the <b>Sink</b> for consumption
+5. All the while, <b>Stats</b> are collected as to how many elements were processed, time taken for execution, etc. 
+
+###Usage
+#####Annotations
+Define an implementation of ```Source.java```
+```java
+    @SourceDeclaration(emits = Integer.class)
+    public class NumberStreamGenerator implements Source<Integer> {
+        int i = 0, max = 10;
+        @Override
+        public Integer getInput() throws Exception {
+            if (i <= max)
+                return i++;
+            return null;
+        }
+    }
+```
+Define an implementation of ```Interpreter.java```
+```java
+    @InterpreterDeclaration(takes = Integer.class, emits = String.class)
+    public class IterationInterpreter implements Interpreter<Integer, String> {
+        @Override
+        public String interpret(Integer integer) {
+            return "Iteration: " + integer;
+        }
+    }
+```
+Define an implementation of ```Sink.java```
+```java
+    @SinkDeclaration(takes = String.class)
+    public class ConsoleSink implements Sink<String> {
+        @Override
+        public void sink(String item) {
+            System.out.println(item);
+        }
+    }
+```
+An finally a Task Declaration
+```java
+    @TaskDeclaration(
+            name = "number-generator", 
+            source = NumberStreamGenerator.class,
+            interpreter = IterationInterpreter.class,
+            sink = ConsoleSink.class,
+            factoryType = FactoryType.INJECTION)
+    class SomeTask implements Task{
+        @Override
+        public String name() {
+            return "number-generator";
+        }
+        ...
+    }
+```
+A Scheduler that will  
+```java
+TaskScheduler taskScheduler = TaskScheduler.builder()
+                               .classPath("com.teflon.task.framework.factory")
+                               .injectorProvider(() -> Guice.createInjector(<your module>))
+                               .build();
+taskScheduler.trigger(new SomeTask());
+```
+
+#####TODOs
+- Queued Execution of Tasks using distributed zookeeper queues
+- 
