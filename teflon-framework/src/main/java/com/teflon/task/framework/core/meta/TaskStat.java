@@ -18,7 +18,6 @@ public class TaskStat {
     private long endTime;
     private String totalTime;
 
-
     public TaskStat(long countTotal, long countOutputSinked) {
         this.countTotal = countTotal;
         this.countOutputSinked = countOutputSinked;

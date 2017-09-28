@@ -16,12 +16,23 @@ import javax.annotation.Nullable;
  */
 public interface Verifier {
 
+    /**
+     * verify is a task declaration in valid
+     *
+     * @param taskActorDeclaration task declaration
+     */
     static void verify(TaskActorDeclaration taskActorDeclaration) {
         verify(taskActorDeclaration.getSource(),
                taskActorDeclaration.getInterpreter(),
                taskActorDeclaration.getSink());
     }
 
+    /**
+     * verifies if a proper chain is formed
+     * The {@link Source} must emit a valid
+     * The {@link Interpreter} must take what the {@link Source} emits
+     * The {@link Sink} must take what the {@link Interpreter} emits
+     */
     static void verify(Class<? extends Source> source,
                        Class<? extends Interpreter> interpreter,
                        Class<? extends Sink> sink) {

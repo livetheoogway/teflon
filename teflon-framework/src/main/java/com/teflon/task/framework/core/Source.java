@@ -14,7 +14,4 @@ public interface Source<Input> extends Unit {
      * @throws Exception while getting input
      */
     Input getInput() throws Exception;
-
-    default void init(Task task) throws Exception {
-    }
 }

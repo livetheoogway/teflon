@@ -25,12 +25,15 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
+ * This is the Scheduler that will try to trigger a task
+ *
  * @author tushar.naik
  * @version 1.0  15/09/17 - 6:57 PM
  */
 @Slf4j
 public final class TaskScheduler {
 
+    /* container of registered tasks */
     private MapContainer<MetaInfo> mContainer;
 
     public TaskScheduler() {
@@ -41,6 +44,11 @@ public final class TaskScheduler {
         this.mContainer = mContainer;
     }
 
+    /**
+     * @param declarations     [optional] a bunch of task declarations
+     * @param injectorProvider [optional] an injector
+     * @param classPath        [optional] classPath the find annotated {@link TaskDeclaration}s
+     */
     @Builder
     public TaskScheduler(@Singular List<TaskActorDeclaration> declarations,
                          Supplier<Injector> injectorProvider, String classPath) {
@@ -70,7 +78,6 @@ public final class TaskScheduler {
         log.info("Registered tasks:" + mContainer.keys());
     }
 
-
     public boolean trigger(Task task) throws TeflonError {
         return trigger(task, t -> {
             /* nothing to do here */
@@ -81,6 +88,15 @@ public final class TaskScheduler {
         return trigger(task, taskStatConsumer, () -> false);
     }
 
+    /**
+     * trigger a task
+     *
+     * @param task             task to be executed
+     * @param taskStatConsumer consumer of states which is called at regular inteval
+     * @param isCancelled      to signal if the task needs to be cancelled
+     * @return true if execution was successful
+     * @throws TeflonError if there was an error
+     */
     public boolean trigger(Task task, Consumer<TaskStat> taskStatConsumer,
                            BooleanSupplier isCancelled) throws TeflonError {
         MetaInfo metaInfo = mContainer.get(task.name());
@@ -91,6 +107,11 @@ public final class TaskScheduler {
         log.info("Executing task:{} id:{}" + task, UUID.randomUUID().toString());
         return new ExecutionFactory<>(metaInfo).newInstance().initiate(task, taskStatConsumer, isCancelled);
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////  HELPERS  ///////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     private MetaInfo getMetaInfo(Supplier<Injector> injectorProvider, TaskActorDeclaration k) {
         Verifier.verify(k);
@@ -105,7 +126,7 @@ public final class TaskScheduler {
 
     private FactoryProvider factoryProvider(FactoryType factoryType, Supplier<Injector> injectorProvider) {
         Verifier.checkExpression(factoryType != FactoryType.INJECTION || injectorProvider != null,
-                                    "AbstractModule may not be null");
+                                 "AbstractModule may not be null");
         if (factoryType == FactoryType.INJECTION) {
             return new InjectedFactoryProvider(injectorProvider);
         } else {

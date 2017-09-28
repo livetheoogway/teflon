@@ -14,14 +14,24 @@ import lombok.Getter;
 @Getter
 @Builder
 public class TaskActorDeclaration {
+
+    /* associate the declaration to a name */
     private String name;
+
+    /* source class for task */
     private Class<? extends Source> source;
+
+    /* interpreter class for task */
     private Class<? extends Interpreter> interpreter;
+
+    /* sink class for task */
     private Class<? extends Sink> sink;
 
+    /* type of object providers (factory) */
     @Builder.Default
     private FactoryType factoryType = FactoryType.DEFAULT_CONSTRUCTOR_REFLECTION;
 
+    /* batch size for the job */
     @Builder.Default
     private int batchSize = 1;
 }

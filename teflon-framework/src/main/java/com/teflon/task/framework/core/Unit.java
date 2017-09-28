@@ -3,6 +3,9 @@ package com.teflon.task.framework.core;
 import java.io.IOException;
 
 /**
+ * A set of defaults used by {@link Source},{@link Interpreter},{@link Sink}
+ * This may be overridden to perform appropriate functions
+ *
  * @author tushar.naik
  * @version 1.0  21/09/17 - 3:36 AM
  */
