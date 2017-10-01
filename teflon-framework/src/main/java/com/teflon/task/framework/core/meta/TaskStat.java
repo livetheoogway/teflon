@@ -41,10 +41,18 @@ public class TaskStat {
     /**
      * @return elapsed time, if end is not yet called for the stat
      */
-    public String getTotalTime() {
+    public String getElapsedTime() {
         if (endTime < 0) {
             return System.currentTimeMillis() - startTime + "ms";
         }
         return totalTime;
+    }
+
+    public void add(TaskStat taskStat) {
+        this.startTime = Math.min(startTime, taskStat.startTime);
+        this.endTime = Math.max(endTime, taskStat.endTime);
+        this.countTotal += taskStat.countTotal;
+        this.countOutputSinked += taskStat.countOutputSinked;
+        this.totalTime = endTime - startTime + "ms";
     }
 }

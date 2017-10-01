@@ -20,6 +20,7 @@ import org.reflections.Reflections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -36,6 +37,11 @@ public final class TaskScheduler {
     /* container of registered tasks */
     private MapContainer<MetaInfo> mContainer;
 
+    private ScheduledExecutorService executorService;
+
+    @Builder.Default
+    private int poolsize = 0;
+
     public TaskScheduler() {
         this(new MapContainer<>());
     }
@@ -51,11 +57,15 @@ public final class TaskScheduler {
      */
     @Builder
     public TaskScheduler(@Singular List<TaskActorDeclaration> declarations,
-                         Supplier<Injector> injectorProvider, String classPath) {
-        mContainer = new MapContainer<>();
+                         Supplier<Injector> injectorProvider, String classPath,
+                         int poolSize) {
+        this.mContainer = new MapContainer<>();
+        if (poolSize > 0) {
+            executorService = Executors.newScheduledThreadPool(poolSize);
+        }
         declarations.forEach(k -> {
             MetaInfo metaInfo = getMetaInfo(injectorProvider, k);
-            mContainer.register(k.getName(), metaInfo);
+            this.mContainer.register(k.getName(), metaInfo);
         });
         if (!Strings.isNullOrEmpty(classPath)) {
             Reflections reflections = new Reflections(classPath);
@@ -72,7 +82,7 @@ public final class TaskScheduler {
                                               .batchSize(taskDeclaration.batchSize())
                                               .build();
                 MetaInfo metaInfo = getMetaInfo(injectorProvider, actorDeclaration);
-                mContainer.register(actorDeclaration.getName(), metaInfo);
+                this.mContainer.register(actorDeclaration.getName(), metaInfo);
             });
         }
         log.info("Registered tasks:" + mContainer.keys());
@@ -108,10 +118,34 @@ public final class TaskScheduler {
         return new ExecutionFactory<>(metaInfo).newInstance().initiate(task, taskStatConsumer, isCancelled);
     }
 
+    public Future<Boolean> submit(Task task, Consumer<TaskStat> taskStatConsumer, BooleanSupplier isCancelled) {
+        preconditions();
+        return executorService.submit(() -> trigger(task, taskStatConsumer, isCancelled));
+    }
+
+    public ScheduledFuture<Boolean> schedule(Task task, Consumer<TaskStat> taskStatConsumer,
+                                             BooleanSupplier isCancelled, long delay, TimeUnit timeUnit) {
+        preconditions();
+        return executorService.schedule(() -> trigger(task, taskStatConsumer, isCancelled), delay, timeUnit);
+    }
+
+    public ScheduledFuture<?> scheduleAtFixedRate(Task task, Consumer<TaskStat> taskStatConsumer,
+                                                  BooleanSupplier isCancelled, long delay, long interval,
+                                                  TimeUnit timeUnit) {
+        preconditions();
+        return executorService.scheduleAtFixedRate(() -> trigger(task, taskStatConsumer, isCancelled), delay, interval, timeUnit);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////  HELPERS  ///////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+    private void preconditions() {
+        if (executorService == null) {
+            throw new UnsupportedOperationException("PoolSize was not been initialized");
+        }
+    }
 
     private MetaInfo getMetaInfo(Supplier<Injector> injectorProvider, TaskActorDeclaration k) {
         Verifier.verify(k);

@@ -12,7 +12,7 @@ A framework that has the following features:
 
 
 ### Maven Dependency
-* Use the following maven dependency for bare minimal framework:
+Use the following maven dependency for bare minimal framework:
 ```
 <dependency>
     <groupId>com.phonepe.teflon</groupId>
@@ -20,7 +20,7 @@ A framework that has the following features:
     <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
-* Use the following maven dependency for actor based Scheduler:
+Use the following maven dependency for actor based Scheduler:
 ```
 <dependency>
     <groupId>com.phonepe.teflon</groupId>

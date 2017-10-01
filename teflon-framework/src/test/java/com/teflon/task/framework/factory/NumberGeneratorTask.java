@@ -8,7 +8,7 @@ import lombok.Data;
  * @version 1.0  19/09/17 - 7:32 PM
  */
 @Data
-public class NumberGeneratorTask implements Task{
+public class NumberGeneratorTask implements Task {
 
     private int start;
     private int end;

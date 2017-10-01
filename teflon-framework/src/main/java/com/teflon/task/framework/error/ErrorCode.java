@@ -6,8 +6,6 @@ package com.teflon.task.framework.error;
  */
 public enum ErrorCode {
     INCOMPATIBLE_TYPES_ERROR,
-    TASK_INSTANTIATION_ERROR,
-    TASK_EXECUTION_ERROR,
     INTERNAL_SERVER_ERROR,
     MULTIPLE_MAPPING_ERROR,
     INVALID_DECLARATION,

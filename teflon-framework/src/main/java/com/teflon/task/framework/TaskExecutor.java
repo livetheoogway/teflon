@@ -89,7 +89,7 @@ public class TaskExecutor<Input, Output> {
                 updatesConsumer.accept(taskStat);
             }
             taskStat.end();
-            log.info("Task of {} inputs from source. Successfully executed in {}. Stats-{}", total, taskStat.getTotalTime(), taskStat);
+            log.info("Task of {} inputs from source. Successfully executed in {}. Stats-{}", total, taskStat.getElapsedTime(), taskStat);
             log.info("Closing sources and sink ..");
             try {
                 source.close();
