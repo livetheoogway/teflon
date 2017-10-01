@@ -46,7 +46,7 @@ A TaskDeclaration is composed of the following Components:
 #### Execution of a <b>Task</b>
 When a task is being executed -
 1. <b>Source</b>, <b>Interpreter</b>, <b>Sink</b> are initiated.
-2. <b>Inputs</b> from <b>Source</b> are serially streamed (individual or batched)
+2. <b>Inputs</b> from <b>Source</b> are serially streamed (in batches)
 3. Batches are then passed onto the <b>Interpreter</b>
 4. The Interpreted elements are then passed onto the <b>Sink</b> for consumption
 5. All the while, <b>Stats</b> are collected as to how many elements were processed, time taken for execution, etc. 
@@ -59,9 +59,9 @@ Define an implementation of ```Source.java```
     public class NumberStreamGenerator implements Source<Integer> {
         int i = 0, max = 10;
         @Override
-        public Integer getInput() throws Exception {
+        public List<Integer> getInput() throws Exception {
             if (i <= max)
-                return i++;
+                return Collections.singletonList(i++);
             return null;
         }
     }
@@ -71,8 +71,8 @@ Define an ```Interpreter```
     @InterpreterDeclaration(takes = Integer.class, emits = String.class)
     public class IterationInterpreter implements Interpreter<Integer, String> {
         @Override
-        public String interpret(Integer integer) {
-            return "Iteration: " + integer;
+        public List<String> interpret(List<Integer> integer) {
+            return integer.stream().map(k->"Iteration: " + integer).collect(Collectors.toList());
         }
     }
 ```
@@ -81,8 +81,8 @@ Define a ```Sink```
     @SinkDeclaration(takes = String.class)
     public class ConsoleSink implements Sink<String> {
         @Override
-        public void sink(String item) {
-            System.out.println(item);
+        public void sink(List<String> item) {
+            items.forEach(System.out::println);
         }
     }
 ```
@@ -94,7 +94,7 @@ An finally a ```TaskDeclaration```
             interpreter = IterationInterpreter.class,
             sink = ConsoleSink.class,
             factoryType = FactoryType.INJECTION)
-    class SomeTask implements Task{
+    class SomeTask implements Task {
         @Override
         public String name() {
             return "number-generator";
