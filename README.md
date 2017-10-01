@@ -108,9 +108,41 @@ TaskScheduler taskScheduler = TaskScheduler.builder()
                                .classPath("com.teflon.task.framework.factory")
                                .injectorProvider(() -> Guice.createInjector(<your module>))
                                .build();
+// run it
 taskScheduler.trigger(new SomeTask());
+// or schedule it
+taskScheduler.schedule(new SomeTask(), someTaskConsumer, ()-> false);
+taskScheduler.scheduleAtFixedRate(new SomeTask(), someTaskConsumer, ()-> false, 0, 1, TimeUnit.SECONDS);
 ```
 
+#### RabbitMQ Actor
+An integration with the [Dropwizard RabbitMQ Bundle](https://github.com/santanusinha/dropwizard-rabbitmq-actors)
+```java
+@Singleton
+@TaskDeclaration(
+        name = "pdf-statement",
+        source = QuerySource.class,
+        interpreter = HtmlTemplateCreator.class,
+        sink = PdfStreamSink.class,
+        factoryType = FactoryType.INJECTION
+)
+public class StatementEngine extends TaskActor<MessageIdType, PdfQueryStatementTask> {
+
+    @Inject
+    public StatementEngine(TaskScheduler taskScheduler,
+                           TeflonConfig config,
+                           RMQConnection connection,
+                           ObjectMapper mapper) {
+        super(MessageIdType.QUERY_PDF_STATEMENT, taskScheduler, config, connection, mapper, PdfQueryStatementTask.class);
+    }
+}
+```
+Now, every new message in the RMQ, will automatically be triggered, with corresponding Sources, Interpreters, Sinks involved.<br>
+Messages (ie Tasks) will get acked automatically, after the successful execution of the task.
+If not, they will be rejected/sidelined accordingly
+
 ##### TODOs
-- Queued Execution of Tasks using distributed zookeeper queues
-- 
+[x] Scheduled execution
+[ ] Queued Execution of Tasks using distributed zookeeper queues
+[ ] Typical Source implementations in separate modules (Hbase, Es, Redis, etc)
+[ ] Use artifactory based paths, for Sources
