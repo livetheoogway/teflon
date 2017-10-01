@@ -9,7 +9,6 @@ import lombok.Data;
  */
 @Data
 public class NumberGeneratorTask implements Task {
-
     private int start;
     private int end;
 

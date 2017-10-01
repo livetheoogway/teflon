@@ -9,13 +9,6 @@ import java.util.List;
 public interface Sink<Output> extends Unit {
 
     /**
-     * sink an incoming output
-     *
-     * @param output output after interpretation
-     */
-    void sink(Output output);
-
-    /**
      * sink a bunch of outputs
      *
      * @param outputs outputs after interpretation

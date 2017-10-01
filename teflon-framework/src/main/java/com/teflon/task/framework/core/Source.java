@@ -1,5 +1,7 @@
 package com.teflon.task.framework.core;
 
+import java.util.List;
+
 /**
  * @author tushar.naik
  * @version 1.0  10/08/17 - 6:05 PM
@@ -13,5 +15,5 @@ public interface Source<Input> extends Unit {
      * @return Input
      * @throws Exception while getting input
      */
-    Input getInput() throws Exception;
+    List<Input> getInput() throws Exception;
 }

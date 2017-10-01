@@ -10,6 +10,9 @@ import com.teflon.task.framework.declaration.annotated.TaskDeclaration;
 import com.teflon.task.framework.impl.ConsoleSink;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author tushar.naik
@@ -34,15 +37,15 @@ public class NumberStreamGenerator implements Source<Integer>, Interpreter<Integ
     }
 
     @Override
-    public Integer getInput() throws Exception {
+    public List<Integer> getInput() throws Exception {
         if (i <= max)
-            return i++;
+            return Collections.singletonList(i++);
         return null;
     }
 
     @Override
-    public String interpret(Integer integer) {
-        return "Iteration: " + integer;
+    public List<String> interpret(List<Integer> integer) {
+        return integer.stream().map(k->"Iteration: " + integer).collect(Collectors.toList());
     }
 
     @Override

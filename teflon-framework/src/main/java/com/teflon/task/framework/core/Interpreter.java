@@ -1,15 +1,17 @@
 package com.teflon.task.framework.core;
 
+import java.util.List;
+
 /**
  * @author tushar.naik
  * @version 1.0  10/08/17 - 6:05 PM
  */
 public interface Interpreter<Input, Output> extends Unit {
     /**
-     * interpret an intput into some form of an Output
+     * interprets a bunch of inputs into some form of an Output
      *
-     * @param input any input
+     * @param inputs list of inputs coming from the source
      * @return interpreted value
      */
-    Output interpret(Input input);
+    List<Output> interpret(List<Input> inputs);
 }

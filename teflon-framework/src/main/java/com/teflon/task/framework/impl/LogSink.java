@@ -13,11 +13,6 @@ import java.util.List;
 public class LogSink<T> implements Sink<T> {
 
     @Override
-    public void sink(T t) {
-        log.info(t.toString());
-    }
-
-    @Override
     public void sink(List<T> ts) {
         log.info(ts.toString());
     }

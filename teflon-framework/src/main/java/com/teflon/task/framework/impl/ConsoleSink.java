@@ -13,12 +13,7 @@ import java.util.List;
 public class ConsoleSink implements Sink<String> {
 
     @Override
-    public void sink(String item) {
-        System.out.println(item);
-    }
-
-    @Override
     public void sink(List<String> items) {
-        System.out.println(items);
+        items.forEach(System.out::println);
     }
 }

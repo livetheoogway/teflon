@@ -37,10 +37,8 @@ public final class TaskScheduler {
     /* container of registered tasks */
     private MapContainer<MetaInfo> mContainer;
 
+    /* executor service for concurrent task execution */
     private ScheduledExecutorService executorService;
-
-    @Builder.Default
-    private int poolsize = 0;
 
     public TaskScheduler() {
         this(new MapContainer<>());
@@ -118,23 +116,78 @@ public final class TaskScheduler {
         return new ExecutionFactory<>(metaInfo).newInstance().initiate(task, taskStatConsumer, isCancelled);
     }
 
+    /**
+     * submit the execution of a task.
+     * Task will be executed by the executor service in a background thread
+     *
+     * @param task             task to be executed
+     * @param taskStatConsumer stats consumer
+     * @param isCancelled      supplier to cancel the task
+     * @return Future instance of the submission
+     */
     public Future<Boolean> submit(Task task, Consumer<TaskStat> taskStatConsumer, BooleanSupplier isCancelled) {
         preconditions();
         return executorService.submit(() -> trigger(task, taskStatConsumer, isCancelled));
     }
 
-    public ScheduledFuture<Boolean> schedule(Task task, Consumer<TaskStat> taskStatConsumer,
+
+    /**
+     * schedule the execution of a task after some delay
+     * Task will be executed by the executor service in a background thread, after delay has passed
+     *
+     * @param task             supplier of task to be executed
+     * @param taskStatConsumer stats consumer
+     * @param isCancelled      supplier to cancel the task
+     * @return Future instance of the submission
+     */
+    public ScheduledFuture<Boolean> schedule(Supplier<Task> task, Consumer<TaskStat> taskStatConsumer,
                                              BooleanSupplier isCancelled, long delay, TimeUnit timeUnit) {
         preconditions();
-        return executorService.schedule(() -> trigger(task, taskStatConsumer, isCancelled), delay, timeUnit);
+        return executorService.schedule(() -> trigger(task.get(), taskStatConsumer, isCancelled), delay, timeUnit);
     }
 
-    public ScheduledFuture<?> scheduleAtFixedRate(Task task, Consumer<TaskStat> taskStatConsumer,
-                                                  BooleanSupplier isCancelled, long delay, long interval,
+    /**
+     * Schedule the execution of a task
+     * Task will be executed by the executor service in a background thread at regular intervals.
+     * Starts after initial delay
+     * triggers the next execution at 'interval' duration
+     *
+     * @param task             supplier of task to be executed
+     * @param taskStatConsumer stats consumer
+     * @param isCancelled      supplier to cancel the task
+     * @param initialDelay     initial initialDelay
+     * @param interval         the period between successive executions
+     * @param timeUnit         the time unit of the initialDelay and interval parameters
+     * @return Future instance of the submission
+     */
+    public ScheduledFuture<?> scheduleAtFixedRate(Supplier<Task> task, Consumer<TaskStat> taskStatConsumer,
+                                                  BooleanSupplier isCancelled, long initialDelay, long interval,
                                                   TimeUnit timeUnit) {
         preconditions();
-        return executorService.scheduleAtFixedRate(() -> trigger(task, taskStatConsumer, isCancelled), delay, interval, timeUnit);
+        return executorService.scheduleAtFixedRate(() -> trigger(task.get(), taskStatConsumer, isCancelled), initialDelay, interval, timeUnit);
     }
+
+    /**
+     * Schedule the execution of a task
+     * Task will be executed by the executor service in a background thread at regular intervals.
+     * Starts after initial delay
+     * triggers next execution after 'delay' duration has passed from the last execution
+     *
+     * @param task             supplier of task to be executed
+     * @param taskStatConsumer stats consumer
+     * @param isCancelled      supplier to cancel the task
+     * @param initialDelay     initial initialDelay
+     * @param delay            the delay between the termination of one execution and the commencement of the next
+     * @param timeUnit         the time unit of the initialDelay and delay parameters
+     * @return Future instance of the submission
+     */
+    public ScheduledFuture<?> scheduleWithFixedDelay(Supplier<Task> task, Consumer<TaskStat> taskStatConsumer,
+                                                     BooleanSupplier isCancelled, long initialDelay, long delay,
+                                                     TimeUnit timeUnit) {
+        preconditions();
+        return executorService.scheduleWithFixedDelay(() -> trigger(task.get(), taskStatConsumer, isCancelled), initialDelay, delay, timeUnit);
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////  HELPERS  ///////////////////////////////////////////////
