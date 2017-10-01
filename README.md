@@ -142,7 +142,7 @@ Messages (ie Tasks) will get acked automatically, after the successful execution
 If not, they will be rejected/sidelined accordingly
 
 ##### TODOs
-[x] Scheduled execution
-[ ] Queued Execution of Tasks using distributed zookeeper queues
-[ ] Typical Source implementations in separate modules (Hbase, Es, Redis, etc)
-[ ] Use artifactory based paths, for Sources
+- [x] Scheduled execution<br>
+- [ ] Queued Execution of Tasks using distributed zookeeper queues<br>
+- [ ] Typical Source implementations in separate modules (Hbase, Es, Redis, etc)<br>
+- [ ] Use artifactory based paths, for Sources<br>
