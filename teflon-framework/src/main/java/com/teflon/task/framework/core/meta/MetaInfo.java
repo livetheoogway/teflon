@@ -5,7 +5,7 @@ import com.teflon.task.framework.core.Sink;
 import com.teflon.task.framework.core.Source;
 import com.teflon.task.framework.factory.InstanceFactory;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 /**
  * A meta class that houses all required instance generating factories
@@ -14,8 +14,8 @@ import lombok.Data;
  * @author tushar.naik
  * @version 1.0  16/09/17 - 1:47 AM
  */
-@Data
 @Builder
+@Getter
 public class MetaInfo {
     /* source object provider */
     private InstanceFactory<? extends Source> sourceInstanceFactory;

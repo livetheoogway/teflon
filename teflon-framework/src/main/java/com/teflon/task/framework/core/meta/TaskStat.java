@@ -1,8 +1,6 @@
 package com.teflon.task.framework.core.meta;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * @author tushar.naik
@@ -10,7 +8,9 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class TaskStat {
     private long countTotal;
     private long countOutputSinked;

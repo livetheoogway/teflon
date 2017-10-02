@@ -37,14 +37,6 @@ public final class TaskScheduler {
     /* executor service for concurrent task execution */
     private ScheduledExecutorService executorService;
 
-    public TaskScheduler() {
-        this(new MapContainer<>());
-    }
-
-    public TaskScheduler(MapContainer<MetaInfo> mContainer) {
-        this.mContainer = mContainer;
-    }
-
     /**
      * @param declarations     [optional] a bunch of task declarations
      * @param injectorProvider [optional] an injector
