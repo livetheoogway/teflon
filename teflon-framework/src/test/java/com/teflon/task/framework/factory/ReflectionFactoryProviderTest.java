@@ -1,6 +1,8 @@
 package com.teflon.task.framework.factory;
 
+import com.teflon.task.framework.StatusCallback;
 import com.teflon.task.framework.TaskScheduler;
+import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.TaskStat;
 import com.teflon.task.framework.declaration.TaskActorDeclaration;
 import com.teflon.task.framework.impl.ConsoleSink;
@@ -24,9 +26,19 @@ public class ReflectionFactoryProviderTest {
                                                                                     .build())
                                                    .build();
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
-        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 5), taskStat::set));
+        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 5), new StatusCallback() {
+            @Override
+            public void statusCallback(Task task, TaskStat taskStats) {
+                taskStat.set(taskStats);
+            }
+        }));
         Assert.assertEquals(taskStat.get().getCountTotal(), 5);
-        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 3), taskStat::set));
+        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 3), new StatusCallback() {
+            @Override
+            public void statusCallback(Task task, TaskStat taskStats) {
+                taskStat.set(taskStats);
+            }
+        }));
         Assert.assertEquals(taskStat.get().getCountTotal(), 3);
     }
 }

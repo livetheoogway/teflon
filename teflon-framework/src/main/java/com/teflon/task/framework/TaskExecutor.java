@@ -1,15 +1,15 @@
 package com.teflon.task.framework;
 
-import com.teflon.task.framework.core.*;
+import com.teflon.task.framework.core.Interpreter;
+import com.teflon.task.framework.core.Sink;
+import com.teflon.task.framework.core.Source;
+import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.TaskStat;
-import com.teflon.task.framework.error.ErrorCode;
 import com.teflon.task.framework.error.TeflonError;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 /**
  * This is the main executor class.
@@ -71,22 +71,28 @@ public class TaskExecutor<Input, Output> {
      * for a given input, initiates the Source, Interpreter and Sink.
      * Streams every Input, Interprets it to an Output, and then sinks the final Output
      *
-     * @param task            task to be executed
-     * @param updatesConsumer something that consumes regular updates. consumer is called when the number of inputs reaches batch size, or when
-     * @param isCancelled     return true if the task was cancelled externally. Execution will stop immediately (during the next batch)
+     * @param task           task to be executed
+     * @param statusCallback something that consumes regular updates.
+     *                       1. {@link StatusCallback#onInit(Task, TaskStat)} is called during init
+     *                       2. {@link StatusCallback#statusCallback(Task, TaskStat)} when the number of inputs reaches batchSize
+     *                       3. {@link StatusCallback#isCancelled(Task, TaskStat)} check cancellation ( when the number of inputs reaches batchSize)
+     *                       4. {@link StatusCallback#onComplete(Task, TaskStat)} when execution completes
+     *                       5. {@link StatusCallback#onError(Task, TaskStat, Exception)} when Execution results in an Exception
      * @return <code>true</code> if successfully executed the task
      * @throws TeflonError any error during task execution
      */
-    public boolean initiate(Task task, Consumer<TaskStat> updatesConsumer,
-                            BooleanSupplier isCancelled) throws TeflonError {
+    public boolean initiate(Task task, StatusCallback statusCallback) throws TeflonError {
         int lastBatchCount = -1;
 
         log.info("Starting to populate all values from source...");
         taskStat.start();
         try {
+            /* initiate all actors */
             source.init(task);
             interpreter.init(task);
             sink.init(task);
+            statusCallback.onInit(task, taskStat);
+
             List<Input> inputs;
             do {
                 inputs = source.getInput();
@@ -102,22 +108,21 @@ public class TaskExecutor<Input, Output> {
                     taskStat.setCountOutputSinked(count);
                     /* call updates consumer only if the number of interpreted inputs were > 1 (Prevents unnecessary noise)  */
                     if (interpretedInputs.size() > 1) {
-                        updatesConsumer.accept(taskStat);
+                        statusCallback.statusCallback(task, taskStat);
                     }
                 }
                 if (total / batchSize > lastBatchCount) {
                     lastBatchCount = (int) (total / batchSize);
                     log.info("Task:{} total:{} stat:{}", task.name(), total, taskStat);
-                    updatesConsumer.accept(taskStat);
+                    statusCallback.statusCallback(task, taskStat);
                     /* this is where we break the if the task was cancelled */
-                    if (isCancelled.getAsBoolean()) {
+                    if (statusCallback.isCancelled(task, taskStat)) {
                         break;
                     }
                 }
             } while (!inputs.isEmpty());
 
-            taskStat.end();
-            updatesConsumer.accept(taskStat);
+            statusCallback.onComplete(task, taskStat);
             log.info("Task of {} inputs from source. Successfully executed in {}. Stats-{}", total, taskStat.getElapsedTime(), taskStat);
             log.info("Closing sources and sink ..");
 
@@ -126,24 +131,25 @@ public class TaskExecutor<Input, Output> {
             interpreter.close();
             sink.close();
 
+            taskStat.end();
             /* will return true unless the task was cancelled */
-            return !isCancelled.getAsBoolean();
+            return !statusCallback.isCancelled(task, taskStat);
         } catch (ClassCastException e) {
             log.error("!!! \\\\_(- -)_//  Incompatible type of Actors while running task. Aborting.. ", e);
-            taskStat.end();
-            updatesConsumer.accept(taskStat);
             source.abort();
             interpreter.abort();
             sink.abort();
-            throw new TeflonError(ErrorCode.INCOMPATIBLE_TYPES_ERROR, e.getMessage());
+            taskStat.end();
+            statusCallback.onError(task, taskStat, e);
+            return false;
         } catch (Exception e) {
             log.error("!!! \\\\_(- -)_//  Ran into problems while running task. Aborting.. ", e);
-            taskStat.end();
-            updatesConsumer.accept(taskStat);
             source.abort();
             interpreter.abort();
             sink.abort();
-            throw TeflonError.propagate(e);
+            taskStat.end();
+            statusCallback.onError(task, taskStat, e);
+            return false;
         }
     }
 }

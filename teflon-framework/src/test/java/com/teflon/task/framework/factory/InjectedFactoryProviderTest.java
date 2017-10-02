@@ -3,7 +3,9 @@ package com.teflon.task.framework.factory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
+import com.teflon.task.framework.StatusCallback;
 import com.teflon.task.framework.TaskScheduler;
+import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.TaskStat;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,10 +34,21 @@ public class InjectedFactoryProviderTest {
                                    }
                                }))
                                .build();
+
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
-        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 10), taskStat::set));
+        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 10), new StatusCallback() {
+            @Override
+            public void statusCallback(Task task, TaskStat taskStats) {
+                taskStat.set(taskStats);
+            }
+        }));
         Assert.assertEquals(taskStat.get().getCountTotal(), 10);
-        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 10), taskStat::set));
+        Assert.assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 10), new StatusCallback() {
+            @Override
+            public void statusCallback(Task task, TaskStat taskStats) {
+                taskStat.set(taskStats);
+            }
+        }));
         Assert.assertEquals(taskStat.get().getCountTotal(), 10);
     }
 }

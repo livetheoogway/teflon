@@ -1,7 +1,8 @@
-# Teflon 
-[![build status](https://gitlab.phonepe.com/Naik/teflon/badges/master/build.svg)](https://gitlab.phonepe.com/Naik/teflon/commits/master)
-[![coverage report](https://gitlab.phonepe.com/Naik/teflon/badges/master/coverage.svg)](https://gitlab.phonepe.com/Naik/teflon/commits/master)
-
+<h2 align="center">Teflon</h2>
+<p align="center">
+<a href="https://gitlab.phonepe.com/Naik/teflon/commits/master"><img alt="build status" src="https://gitlab.phonepe.com/Naik/teflon/badges/master/build.svg" /></a>
+<a href="https://gitlab.phonepe.com/Naik/teflon/commits/master"><img alt="coverage report" src="https://gitlab.phonepe.com/Naik/teflon/badges/master/coverage.svg" /></a>
+</p> 
 
 #### Task Execution Framework with Little Orchestration Needed aka TEFLON 
 
@@ -111,8 +112,8 @@ TaskScheduler taskScheduler = TaskScheduler.builder()
 // run it
 taskScheduler.trigger(new SomeTask());
 // or schedule it
-taskScheduler.schedule(new SomeTask(), someTaskConsumer, ()-> false);
-taskScheduler.scheduleAtFixedRate(new SomeTask(), someTaskConsumer, ()-> false, 0, 1, TimeUnit.SECONDS);
+taskScheduler.schedule(new SomeTask(), new StatusConsumer(){});
+taskScheduler.scheduleAtFixedRate(new SomeTask(), new StatusConsumer(){}, 0, 1, TimeUnit.SECONDS);
 ```
 
 #### RabbitMQ Actor

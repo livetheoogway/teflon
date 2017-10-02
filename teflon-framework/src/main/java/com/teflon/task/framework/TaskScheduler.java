@@ -5,7 +5,6 @@ import com.google.inject.Injector;
 import com.teflon.task.framework.container.MapContainer;
 import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.MetaInfo;
-import com.teflon.task.framework.core.meta.TaskStat;
 import com.teflon.task.framework.declaration.TaskActorDeclaration;
 import com.teflon.task.framework.declaration.annotated.TaskDeclaration;
 import com.teflon.task.framework.error.ErrorCode;
@@ -21,8 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.*;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -87,47 +84,39 @@ public final class TaskScheduler {
     }
 
     public boolean trigger(Task task) throws TeflonError {
-        return trigger(task, t -> {
-            /* nothing to do here */
+        return trigger(task, new StatusCallback() {
         });
-    }
-
-    public boolean trigger(Task task, Consumer<TaskStat> taskStatConsumer) throws TeflonError {
-        return trigger(task, taskStatConsumer, () -> false);
     }
 
     /**
      * trigger a task
      *
-     * @param task             task to be executed
-     * @param taskStatConsumer consumer of states which is called at regular inteval
-     * @param isCancelled      to signal if the task needs to be cancelled
+     * @param task           task to be executed
+     * @param statusCallback consumer of execution lifecycle status, which is called at regular intervals
      * @return true if execution was successful
      * @throws TeflonError if there was an error
      */
-    public boolean trigger(Task task, Consumer<TaskStat> taskStatConsumer,
-                           BooleanSupplier isCancelled) throws TeflonError {
+    public boolean trigger(Task task, StatusCallback statusCallback) throws TeflonError {
         MetaInfo metaInfo = mContainer.get(task.name());
         if (metaInfo == null) {
             throw new TeflonError(ErrorCode.TASK_UNAVAILABLE, "Task:" + task.name() +
                     " not registered. Available tasks:" + mContainer.keys());
         }
         log.info("Executing task:{} id:{}" + task, UUID.randomUUID().toString());
-        return new ExecutionFactory<>(metaInfo).newInstance().initiate(task, taskStatConsumer, isCancelled);
+        return new ExecutionFactory<>(metaInfo).newInstance().initiate(task, statusCallback);
     }
 
     /**
      * submit the execution of a task.
      * Task will be executed by the executor service in a background thread
      *
-     * @param task             task to be executed
-     * @param taskStatConsumer stats consumer
-     * @param isCancelled      supplier to cancel the task
+     * @param task           task to be executed
+     * @param statusCallback consumer of execution lifecycle status, which is called at regular intervals
      * @return Future instance of the submission
      */
-    public Future<Boolean> submit(Task task, Consumer<TaskStat> taskStatConsumer, BooleanSupplier isCancelled) {
+    public Future<Boolean> submit(Task task, StatusCallback statusCallback) {
         preconditions();
-        return executorService.submit(() -> trigger(task, taskStatConsumer, isCancelled));
+        return executorService.submit(() -> trigger(task, statusCallback));
     }
 
 
@@ -135,15 +124,14 @@ public final class TaskScheduler {
      * schedule the execution of a task after some delay
      * Task will be executed by the executor service in a background thread, after delay has passed
      *
-     * @param task             supplier of task to be executed
-     * @param taskStatConsumer stats consumer
-     * @param isCancelled      supplier to cancel the task
+     * @param task           supplier of task to be execute
+     * @param statusCallback consumer of execution lifecycle status, which is called at regular intervals
      * @return Future instance of the submission
      */
-    public ScheduledFuture<Boolean> schedule(Supplier<Task> task, Consumer<TaskStat> taskStatConsumer,
-                                             BooleanSupplier isCancelled, long delay, TimeUnit timeUnit) {
+    public ScheduledFuture<Boolean> schedule(Supplier<Task> task, StatusCallback statusCallback, long delay,
+                                             TimeUnit timeUnit) {
         preconditions();
-        return executorService.schedule(() -> trigger(task.get(), taskStatConsumer, isCancelled), delay, timeUnit);
+        return executorService.schedule(() -> trigger(task.get(), statusCallback), delay, timeUnit);
     }
 
     /**
@@ -152,19 +140,18 @@ public final class TaskScheduler {
      * Starts after initial delay
      * triggers the next execution at 'interval' duration
      *
-     * @param task             supplier of task to be executed
-     * @param taskStatConsumer stats consumer
-     * @param isCancelled      supplier to cancel the task
-     * @param initialDelay     initial initialDelay
-     * @param interval         the period between successive executions
-     * @param timeUnit         the time unit of the initialDelay and interval parameters
+     * @param task           supplier of task to be executed
+     * @param statusCallback consumer of execution lifecycle status, which is called at regular intervals
+     * @param initialDelay   initial initialDelay
+     * @param interval       the period between successive executions
+     * @param timeUnit       the time unit of the initialDelay and interval parameters
      * @return Future instance of the submission
      */
-    public ScheduledFuture<?> scheduleAtFixedRate(Supplier<Task> task, Consumer<TaskStat> taskStatConsumer,
-                                                  BooleanSupplier isCancelled, long initialDelay, long interval,
+    public ScheduledFuture<?> scheduleAtFixedRate(Supplier<Task> task, StatusCallback statusCallback, long initialDelay,
+                                                  long interval,
                                                   TimeUnit timeUnit) {
         preconditions();
-        return executorService.scheduleAtFixedRate(() -> trigger(task.get(), taskStatConsumer, isCancelled), initialDelay, interval, timeUnit);
+        return executorService.scheduleAtFixedRate(() -> trigger(task.get(), statusCallback), initialDelay, interval, timeUnit);
     }
 
     /**
@@ -173,19 +160,18 @@ public final class TaskScheduler {
      * Starts after initial delay
      * triggers next execution after 'delay' duration has passed from the last execution
      *
-     * @param task             supplier of task to be executed
-     * @param taskStatConsumer stats consumer
-     * @param isCancelled      supplier to cancel the task
-     * @param initialDelay     initial initialDelay
-     * @param delay            the delay between the termination of one execution and the commencement of the next
-     * @param timeUnit         the time unit of the initialDelay and delay parameters
+     * @param task           supplier of task to be executed
+     * @param statusCallback consumer of execution lifecycle status, which is called at regular intervals
+     * @param initialDelay   initial initialDelay
+     * @param delay          the delay between the termination of one execution and the commencement of the next
+     * @param timeUnit       the time unit of the initialDelay and delay parameters
      * @return Future instance of the submission
      */
-    public ScheduledFuture<?> scheduleWithFixedDelay(Supplier<Task> task, Consumer<TaskStat> taskStatConsumer,
-                                                     BooleanSupplier isCancelled, long initialDelay, long delay,
+    public ScheduledFuture<?> scheduleWithFixedDelay(Supplier<Task> task, StatusCallback statusCallback,
+                                                     long initialDelay, long delay,
                                                      TimeUnit timeUnit) {
         preconditions();
-        return executorService.scheduleWithFixedDelay(() -> trigger(task.get(), taskStatConsumer, isCancelled), initialDelay, delay, timeUnit);
+        return executorService.scheduleWithFixedDelay(() -> trigger(task.get(), statusCallback), initialDelay, delay, timeUnit);
     }
 
 
