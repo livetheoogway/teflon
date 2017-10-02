@@ -22,7 +22,8 @@ public interface Verifier {
      * @param taskActorDeclaration task declaration
      */
     static void verify(TaskActorDeclaration taskActorDeclaration) {
-        verify(taskActorDeclaration.getSource(),
+        verify(taskActorDeclaration.getName(),
+               taskActorDeclaration.getSource(),
                taskActorDeclaration.getInterpreter(),
                taskActorDeclaration.getSink());
     }
@@ -33,20 +34,21 @@ public interface Verifier {
      * The {@link Interpreter} must take what the {@link Source} emits
      * The {@link Sink} must take what the {@link Interpreter} emits
      */
-    static void verify(Class<? extends Source> source,
+    static void verify(String name,
+                       Class<? extends Source> source,
                        Class<? extends Interpreter> interpreter,
                        Class<? extends Sink> sink) {
-        checkNull(source, "Source cannot be null");
-        checkNull(interpreter, "Interpreter cannot be null");
-        checkNull(sink, "Sink cannot be null");
+        checkNull(source, message(name, source, interpreter, sink, "Source cannot be null"));
+        checkNull(interpreter, message(name, source, interpreter, sink, "Interpreter cannot be null"));
+        checkNull(sink, message(name, source, interpreter, sink, "Sink cannot be null"));
         SourceDeclaration sourceDeclaration = source.getAnnotation(SourceDeclaration.class);
         InterpreterDeclaration interpreterDeclaration = interpreter.getAnnotation(InterpreterDeclaration.class);
         SinkDeclaration sinkDeclaration = sink.getAnnotation(SinkDeclaration.class);
         if (interpreterDeclaration.takes() != sourceDeclaration.emits()) {
-            throw new TeflonError(ErrorCode.INVALID_DECLARATION, "Interpreter must take what the Source provides");
+            throw new TeflonError(ErrorCode.INVALID_DECLARATION, message(name, source, interpreter, sink, "Interpreter must take what the Source provides"));
         }
         if (interpreterDeclaration.emits() != sinkDeclaration.takes()) {
-            throw new TeflonError(ErrorCode.INVALID_DECLARATION, "Sink must take what the Interpreter provides");
+            throw new TeflonError(ErrorCode.INVALID_DECLARATION, message(name, source, interpreter, sink, "Sink must take what the Interpreter provides"));
         }
     }
 
@@ -54,6 +56,14 @@ public interface Verifier {
         if (!expression) {
             throw new TeflonError(ErrorCode.INVALID_DECLARATION, String.valueOf(errorMessage));
         }
+    }
+
+    static String message(String name,
+                          Class<? extends Source> source,
+                          Class<? extends Interpreter> interpreter,
+                          Class<? extends Sink> sink,
+                          String message) {
+        return String.format("declaration:%s source:%s interpreter:%s sink:%s error:%s", name, source, interpreter, sink, message);
     }
 
     static <T> void checkNull(T o, String message) {

@@ -128,7 +128,6 @@ public class ScheduledExecutionTest {
 
         Thread.sleep(1200);
         Assert.assertTrue(taskStat.get().getCountTotal() > 1);
-
     }
 
     @Test
