@@ -52,7 +52,7 @@ public class ScheduledExecutionTest {
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
 
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         Assert.assertTrue(taskStat.get().getCountTotal() > 1);
     }
 
@@ -88,7 +88,7 @@ public class ScheduledExecutionTest {
             }
         }, 20, 1000, TimeUnit.MILLISECONDS);
 
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         Assert.assertTrue(taskStat.get().getCountTotal() > 1);
     }
 
@@ -126,7 +126,7 @@ public class ScheduledExecutionTest {
         Thread.sleep(20);
         Assert.assertTrue(taskStat.get() == null);
 
-        Thread.sleep(500);
+        Thread.sleep(1200);
         Assert.assertTrue(taskStat.get().getCountTotal() > 1);
 
     }
@@ -164,7 +164,7 @@ public class ScheduledExecutionTest {
         });
         Assert.assertTrue(taskStat.get() == null);
 
-        Thread.sleep(300);
+        Thread.sleep(1000);
         Assert.assertTrue(taskStat.get().getCountTotal() > 1);
 
     }
