@@ -50,6 +50,8 @@ public class TaskExecutor<Input, Output> {
 
     /* total Inputs during the execution */
     private long total = 0;
+
+    /* stats collector */
     private TaskStat taskStat;
 
     /**
@@ -151,6 +153,18 @@ public class TaskExecutor<Input, Output> {
             statusCallback.onError(task, taskStat, e);
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "TaskExecutor[" + "batchSize:" + batchSize +
+                ", source:" + source +
+                ", interpreter:" + interpreter +
+                ", sink:" + sink +
+                ", count:" + count +
+                ", total:" + total +
+                ", taskStat:" + taskStat +
+                ']';
     }
 }
 

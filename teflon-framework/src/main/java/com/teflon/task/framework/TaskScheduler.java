@@ -94,8 +94,15 @@ public final class TaskScheduler {
             throw new TeflonError(ErrorCode.TASK_UNAVAILABLE, "Task:" + task.name() +
                     " not registered. Available tasks:" + mContainer.keys());
         }
-        log.info("Executing task:{} id:{}" + task, UUID.randomUUID().toString());
-        return new ExecutionFactory<>(metaInfo).newInstance().initiate(task, statusCallback);
+        log.info("Executing task:{}", task);
+        try {
+            TaskExecutor<?, ?> taskExecutor = new ExecutionFactory<>(metaInfo).newInstance();
+            log.debug("taskExecutor:" + taskExecutor);
+            return taskExecutor.initiate(task, statusCallback);
+        } catch (Exception e) {
+            log.error("Error while creating taskExecutor", e);
+            return false;
+        }
     }
 
     /**
@@ -108,6 +115,7 @@ public final class TaskScheduler {
      */
     public Future<Boolean> submit(Task task, StatusCallback statusCallback) {
         preconditions();
+        log.info("Submitting task:{}", task, UUID.randomUUID().toString());
         return executorService.submit(() -> trigger(task, statusCallback));
     }
 
@@ -123,6 +131,7 @@ public final class TaskScheduler {
     public ScheduledFuture<Boolean> schedule(Supplier<Task> task, StatusCallback statusCallback, long delay,
                                              TimeUnit timeUnit) {
         preconditions();
+        log.info("Scheduling task:{}", task);
         return executorService.schedule(() -> trigger(task.get(), statusCallback), delay, timeUnit);
     }
 
@@ -143,6 +152,7 @@ public final class TaskScheduler {
                                                   long interval,
                                                   TimeUnit timeUnit) {
         preconditions();
+        log.info("Scheduling at Fixed Rate- task:{}", task);
         return executorService.scheduleAtFixedRate(() -> trigger(task.get(), statusCallback), initialDelay, interval, timeUnit);
     }
 

@@ -28,4 +28,13 @@ public class MetaInfo {
 
     /* batch size for task execution */
     private int batchSize;
+
+    @Override
+    public String toString() {
+        return "MetaInfo[" + "source:" + sourceInstanceFactory +
+                ", interpreter:" + interpreterInstanceFactory +
+                ", sink:" + sinkInstanceFactory +
+                ", batchSize:" + batchSize +
+                ']';
+    }
 }
