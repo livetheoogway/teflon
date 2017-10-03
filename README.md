@@ -41,13 +41,13 @@ You will find this framework useful if you:
 A TaskDeclaration is composed of the following Components:
 > 1. Name - The name that is going to uniquely identify the declaration. The declaration chosen while executing a <b>Task</b>, will depend on the name of the <b>Task</b> 
 > 1. <b>Source</b> - A source that emits an Input / stream of Inputs
-> 2. <b>Interpreter</b> - The interpreter that takes the <b>Input from the <b>Source and emits an Output
+> 2. <b>Interpreter</b> - The interpreter that takes the <b>Input</b> from the <b>Source</b> and emits an Output
 > 3. <b>Sink</b> - A sink that consumes the <b>Output</b>
 
 #### Execution of a <b>Task</b>
 When a task is being executed -
 1. <b>Source</b>, <b>Interpreter</b>, <b>Sink</b> are initiated.
-2. <b>Inputs</b> from <b>Source</b> are serially streamed (in batches)
+2. <b>Inputs</b> from <b>Source</b> are streamed (in batches)
 3. Batches are then passed onto the <b>Interpreter</b>
 4. The Interpreted elements are then passed onto the <b>Sink</b> for consumption
 5. All the while, <b>Stats</b> are collected as to how many elements were processed, time taken for execution, etc. 
@@ -123,8 +123,8 @@ An integration with the [Dropwizard RabbitMQ Bundle](https://github.com/santanus
 @TaskDeclaration(
         name = "pdf-statement",
         source = QuerySource.class,
-        interpreter = HtmlTemplateCreator.class,
-        sink = PdfStreamSink.class,
+        interpreter = PdfDocumentCreator.class,
+        sink = EmailSendSink.class,
         factoryType = FactoryType.INJECTION
 )
 public class StatementEngine extends TaskActor<MessageIdType, PdfQueryStatementTask> {
