@@ -144,7 +144,7 @@ public class TaskExecutor<Input, Output> {
             taskStat.end();
             statusCallback.onError(task, taskStat, e);
             return false;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("!!! \\\\_(- -)_//  Ran into problems while running task. Aborting.. ", e);
             source.abort();
             interpreter.abort();

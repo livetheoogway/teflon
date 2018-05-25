@@ -91,7 +91,7 @@ public class ExceptionExecutionTest {
             }
 
             @Override
-            public void onError(Task task, TaskStat taskStat, Exception e) {
+            public void onError(Task task, TaskStat taskStat, Throwable e) {
                 Assert.assertTrue(e instanceof RuntimeException);
                 exceptionCalled.set(true);
             }

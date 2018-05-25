@@ -44,6 +44,6 @@ public interface StatusCallback {
     /**
      * callback when an exception is thrown
      */
-    default void onError(Task task, TaskStat taskStat, Exception e) {
+    default void onError(Task task, TaskStat taskStat, Throwable e) {
     }
 }
