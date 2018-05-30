@@ -132,6 +132,11 @@ public final class TaskScheduler {
         return executorService.submit(() -> trigger(task, statusCallback));
     }
 
+    public Future<Boolean> submit(Task task, StatusCallback statusCallback, TaskStat<?> taskStat) {
+        preconditions();
+        log.info("Submitting task:{}", task, UUID.randomUUID().toString());
+        return executorService.submit(() -> resume(task, statusCallback, taskStat));
+    }
 
     /**
      * schedule the execution of a task after some delay
@@ -162,8 +167,7 @@ public final class TaskScheduler {
      * @return Future instance of the submission
      */
     public ScheduledFuture<?> scheduleAtFixedRate(Supplier<Task> task, StatusCallback statusCallback, long initialDelay,
-                                                  long interval,
-                                                  TimeUnit timeUnit) {
+                                                  long interval, TimeUnit timeUnit) {
         preconditions();
         log.info("Scheduling at Fixed Rate- task:{}", task);
         return executorService.scheduleAtFixedRate(() -> trigger(task.get(), statusCallback), initialDelay, interval, timeUnit);

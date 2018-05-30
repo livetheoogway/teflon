@@ -66,17 +66,33 @@ public class TaskExecutor<Input, Progress, Output> {
         this.taskStat = new TaskStat<>(total, sinkCount);
     }
 
-    public boolean resume(Task task, StatusCallback statusCallback, TaskStat taskStat) throws TeflonError {
+    /**
+     * for a given input, initiates the Source, Interpreter and Sink.
+     * Streams every Input, Interprets it to an Output, and then sinks the final Output
+     *
+     * @param task           task to be executed
+     * @param statusCallback something that consumes regular updates.
+     *                       1. {@link StatusCallback#onInit(Task, TaskStat)} is called during init
+     *                       2. {@link StatusCallback#statusCallback(Task, TaskStat)} when the number of inputs reaches batchSize
+     *                       3. {@link StatusCallback#isCancelled(Task, TaskStat)} check cancellation ( when the number of inputs reaches batchSize)
+     *                       4. {@link StatusCallback#onComplete(Task, TaskStat)} when execution completes
+     *                       5. {@link StatusCallback#onError(Task, TaskStat, Throwable)} when Execution results in an Exception
+     * @return <code>true</code> if successfully executed the task
+     * @throws TeflonError any error during task execution
+     */
+    public boolean initiate(Task task, StatusCallback statusCallback) throws TeflonError {
         int lastBatchCount = -1;
-        log.info("Resuming task:{}", task);
+
+        log.info("Starting to populate all values from source...");
+        taskStat.start();
         try {
             /* initiate all actors */
-            source.resume(task, taskStat);
-            statusCallback.onResume(task, taskStat);
+            source.init(task);
+            interpreter.init(task);
+            sink.init(task);
+            statusCallback.onInit(task, taskStat);
 
-            sinkCount = taskStat.getCountOutputSinked();
-            total = taskStat.getCountTotal();
-            /* execute */
+            /* execute task */
             executeTask(task, statusCallback, lastBatchCount, taskStat);
 
             /* close all actors */
@@ -106,33 +122,17 @@ public class TaskExecutor<Input, Progress, Output> {
         }
     }
 
-    /**
-     * for a given input, initiates the Source, Interpreter and Sink.
-     * Streams every Input, Interprets it to an Output, and then sinks the final Output
-     *
-     * @param task           task to be executed
-     * @param statusCallback something that consumes regular updates.
-     *                       1. {@link StatusCallback#onInit(Task, TaskStat)} is called during init
-     *                       2. {@link StatusCallback#statusCallback(Task, TaskStat)} when the number of inputs reaches batchSize
-     *                       3. {@link StatusCallback#isCancelled(Task, TaskStat)} check cancellation ( when the number of inputs reaches batchSize)
-     *                       4. {@link StatusCallback#onComplete(Task, TaskStat)} when execution completes
-     *                       5. {@link StatusCallback#onError(Task, TaskStat, Throwable)} when Execution results in an Exception
-     * @return <code>true</code> if successfully executed the task
-     * @throws TeflonError any error during task execution
-     */
-    public boolean initiate(Task task, StatusCallback statusCallback) throws TeflonError {
+    public boolean resume(Task task, StatusCallback statusCallback, TaskStat taskStat) throws TeflonError {
         int lastBatchCount = -1;
-
-        log.info("Starting to populate all values from source...");
-        taskStat.start();
+        log.info("Resuming task:{}", task);
         try {
             /* initiate all actors */
-            source.init(task);
-            interpreter.init(task);
-            sink.init(task);
-            statusCallback.onInit(task, taskStat);
+            source.resume(task, taskStat);
+            statusCallback.onResume(task, taskStat);
 
-            /* execute task */
+            sinkCount = taskStat.getCountOutputSinked();
+            total = taskStat.getCountTotal();
+            /* execute */
             executeTask(task, statusCallback, lastBatchCount, taskStat);
 
             /* close all actors */
