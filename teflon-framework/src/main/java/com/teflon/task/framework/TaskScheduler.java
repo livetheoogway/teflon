@@ -101,6 +101,21 @@ public final class TaskScheduler {
         }
     }
 
+    public boolean trigger(Task task) throws TeflonError {
+        return trigger(task, new StatusCallback() {
+        });
+    }
+
+    /**
+     * try and resume a task from its previous state (progress)
+     *
+     * @param task           task to be resumed
+     * @param statusCallback status consumer
+     * @param taskStat       stats (previous state) of the earlier running task
+     * @return true if successful
+     * @throws TeflonError while resuming task
+     * @see TaskStat#getTaskProgress()
+     */
     public boolean resume(Task task, StatusCallback statusCallback, TaskStat<?> taskStat) throws TeflonError {
         MetaInfo metaInfo = mContainer.get(task.name());
         if (metaInfo == null) {
@@ -116,6 +131,11 @@ public final class TaskScheduler {
             log.error("Error while creating taskExecutor", e);
             return false;
         }
+    }
+
+    public boolean resumer(Task task, TaskStat<?> taskStat) throws TeflonError {
+        return resume(task, new StatusCallback() {
+        }, taskStat);
     }
 
     /**
