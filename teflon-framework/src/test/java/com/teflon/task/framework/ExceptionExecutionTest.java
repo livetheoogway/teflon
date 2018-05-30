@@ -1,13 +1,10 @@
 package com.teflon.task.framework;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
 import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.TaskStat;
 import com.teflon.task.framework.factory.NumberGeneratorTask;
-import com.teflon.task.framework.factory.NumberStreamGenerator;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,24 +15,15 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version 1.0  02/10/17 - 9:53 PM
  */
 public class ExceptionExecutionTest {
+    private TaskScheduler taskScheduler;
+
+    @Before
+    public void setUp() {
+        taskScheduler = TestUtil.getScheduler();
+    }
+
     @Test
     public void testCancellation() throws Exception {
-
-        TaskScheduler taskScheduler
-                = TaskScheduler.builder()
-                               .classPath("com.teflon.task.framework.factory")
-                               .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
-                                   @Override
-                                   protected void configure() {
-                                   }
-
-                                   @Provides
-                                   public NumberStreamGenerator getSimpleImpl() {
-                                       return new NumberStreamGenerator();
-                                   }
-                               }))
-                               .build();
-
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
         Assert.assertFalse(taskScheduler.trigger(new NumberGeneratorTask(1, 10), new StatusCallback() {
             int i = 1;
@@ -56,22 +44,6 @@ public class ExceptionExecutionTest {
 
     @Test
     public void testException() throws Exception {
-
-        TaskScheduler taskScheduler
-                = TaskScheduler.builder()
-                               .classPath("com.teflon.task.framework.factory")
-                               .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
-                                   @Override
-                                   protected void configure() {
-                                   }
-
-                                   @Provides
-                                   public NumberStreamGenerator getSimpleImpl() {
-                                       return new NumberStreamGenerator();
-                                   }
-                               }))
-                               .build();
-
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
         AtomicBoolean exceptionCalled = new AtomicBoolean(false);
         Assert.assertFalse(taskScheduler.trigger(new NumberGeneratorTask(1, 10), new StatusCallback() {

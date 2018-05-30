@@ -1,12 +1,8 @@
 package com.teflon.task.framework;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
 import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.TaskStat;
 import com.teflon.task.framework.factory.NumberGeneratorTask;
-import com.teflon.task.framework.factory.NumberStreamGenerator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,20 +21,7 @@ public class ScheduledExecutionTest {
 
     @Before
     public void setUp() {
-        taskScheduler = TaskScheduler.builder()
-                                     .classPath("com.teflon.task.framework.factory")
-                                     .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
-                                         @Override
-                                         protected void configure() {
-                                         }
-
-                                         @Provides
-                                         public NumberStreamGenerator getSimpleImpl() {
-                                             return new NumberStreamGenerator();
-                                         }
-                                     }))
-                                     .poolSize(10)
-                                     .build();
+        taskScheduler = TestUtil.getScheduler();
     }
 
     @Test
@@ -145,8 +128,7 @@ public class ScheduledExecutionTest {
                 }
             }
         });
-        System.out.println("taskStat = " + taskStat);
-
+        long countPrevious = taskStat.get().getCountTotal();
         taskScheduler.resume(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
@@ -158,6 +140,7 @@ public class ScheduledExecutionTest {
             }
         }, taskStat.get());
         System.out.println("taskStat = " + taskStat);
+        Assert.assertTrue(countPrevious < taskStat.get().getCountTotal());
 
     }
 }

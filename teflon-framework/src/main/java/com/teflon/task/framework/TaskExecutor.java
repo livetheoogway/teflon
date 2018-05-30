@@ -167,10 +167,10 @@ public class TaskExecutor<Input, Progress, Output> {
         List<Input> inputs;
         do {
             SourceInputs<Input, Progress> sourceInputs = source.getInput();
-            inputs = sourceInputs.getInputs();
-            if (inputs == null) {
+            if (sourceInputs == null || sourceInputs.getInputs() == null) {
                 break;
             }
+            inputs = sourceInputs.getInputs();
             taskStat.setTaskProgress(sourceInputs.getProgress());
             total += inputs.size();
             List<Output> interpretedInputs = interpreter.interpret(inputs);
