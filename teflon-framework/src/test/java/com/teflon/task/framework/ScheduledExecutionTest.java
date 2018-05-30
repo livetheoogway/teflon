@@ -8,6 +8,7 @@ import com.teflon.task.framework.core.meta.TaskStat;
 import com.teflon.task.framework.factory.NumberGeneratorTask;
 import com.teflon.task.framework.factory.NumberStreamGenerator;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Random;
@@ -20,23 +21,28 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class ScheduledExecutionTest {
 
+    private TaskScheduler taskScheduler;
+
+    @Before
+    public void setUp() {
+        taskScheduler = TaskScheduler.builder()
+                                     .classPath("com.teflon.task.framework.factory")
+                                     .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
+                                         @Override
+                                         protected void configure() {
+                                         }
+
+                                         @Provides
+                                         public NumberStreamGenerator getSimpleImpl() {
+                                             return new NumberStreamGenerator();
+                                         }
+                                     }))
+                                     .poolSize(10)
+                                     .build();
+    }
+
     @Test
     public void testScheduledExecution() throws Exception {
-        TaskScheduler taskScheduler
-                = TaskScheduler.builder()
-                               .classPath("com.teflon.task.framework.factory")
-                               .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
-                                   @Override
-                                   protected void configure() {
-                                   }
-
-                                   @Provides
-                                   public NumberStreamGenerator getSimpleImpl() {
-                                       return new NumberStreamGenerator();
-                                   }
-                               }))
-                               .poolSize(10)
-                               .build();
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
@@ -58,21 +64,6 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testScheduledFixedExecution() throws Exception {
-        TaskScheduler taskScheduler
-                = TaskScheduler.builder()
-                               .classPath("com.teflon.task.framework.factory")
-                               .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
-                                   @Override
-                                   protected void configure() {
-                                   }
-
-                                   @Provides
-                                   public NumberStreamGenerator getSimpleImpl() {
-                                       return new NumberStreamGenerator();
-                                   }
-                               }))
-                               .poolSize(10)
-                               .build();
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
@@ -94,21 +85,6 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testScheduleExecution() throws Exception {
-        TaskScheduler taskScheduler
-                = TaskScheduler.builder()
-                               .classPath("com.teflon.task.framework.factory")
-                               .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
-                                   @Override
-                                   protected void configure() {
-                                   }
-
-                                   @Provides
-                                   public NumberStreamGenerator getSimpleImpl() {
-                                       return new NumberStreamGenerator();
-                                   }
-                               }))
-                               .poolSize(10)
-                               .build();
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
@@ -132,21 +108,6 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testSubmit() throws Exception {
-        TaskScheduler taskScheduler
-                = TaskScheduler.builder()
-                               .classPath("com.teflon.task.framework.factory")
-                               .injectorProvider(() -> Guice.createInjector(new AbstractModule() {
-                                   @Override
-                                   protected void configure() {
-                                   }
-
-                                   @Provides
-                                   public NumberStreamGenerator getSimpleImpl() {
-                                       return new NumberStreamGenerator();
-                                   }
-                               }))
-                               .poolSize(10)
-                               .build();
         AtomicReference<TaskStat> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
@@ -165,6 +126,38 @@ public class ScheduledExecutionTest {
 
         Thread.sleep(1000);
         Assert.assertTrue(taskStat.get().getCountTotal() > 1);
+
+    }
+
+    @Test
+    public void testSubmitWithResume() {
+        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
+        Random random = new Random();
+        random.nextInt(10);
+
+        taskScheduler.trigger(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+            @Override
+            public void statusCallback(Task task, TaskStat t) {
+                if (taskStat.get() == null) {
+                    taskStat.set(t);
+                } else {
+                    taskStat.get().add(t);
+                }
+            }
+        });
+        System.out.println("taskStat = " + taskStat);
+
+        taskScheduler.resume(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+            @Override
+            public void statusCallback(Task task, TaskStat t) {
+                if (taskStat.get() == null) {
+                    taskStat.set(t);
+                } else {
+                    taskStat.get().add(t);
+                }
+            }
+        }, taskStat.get());
+        System.out.println("taskStat = " + taskStat);
 
     }
 }

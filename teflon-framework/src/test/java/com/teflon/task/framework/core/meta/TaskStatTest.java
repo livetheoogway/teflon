@@ -18,7 +18,7 @@ public class TaskStatTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testStatException() throws Exception {
+    public void testStatException() {
         TaskStat taskStat = new TaskStat();
         taskStat.start();
         taskStat.setCountTotal(12);

@@ -21,6 +21,12 @@ public interface StatusCallback {
     }
 
     /**
+     * callback during init of the task
+     */
+    default void onResume(Task task, TaskStat taskStat) {
+    }
+
+    /**
      * callback at regular intervals, when a batchSize is reached
      */
     default void statusCallback(Task task, TaskStat taskStat) {

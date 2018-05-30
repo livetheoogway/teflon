@@ -5,6 +5,7 @@ import com.google.inject.Injector;
 import com.teflon.task.framework.container.MapContainer;
 import com.teflon.task.framework.core.Task;
 import com.teflon.task.framework.core.meta.MetaInfo;
+import com.teflon.task.framework.core.meta.TaskStat;
 import com.teflon.task.framework.declaration.TaskActorDeclaration;
 import com.teflon.task.framework.declaration.annotated.TaskDeclaration;
 import com.teflon.task.framework.error.ErrorCode;
@@ -75,11 +76,6 @@ public final class TaskScheduler {
         log.info("Registered tasks:" + mContainer.keys());
     }
 
-    public boolean trigger(Task task) throws TeflonError {
-        return trigger(task, new StatusCallback() {
-        });
-    }
-
     /**
      * trigger a task
      *
@@ -96,9 +92,26 @@ public final class TaskScheduler {
         }
         log.info("Executing task:{}", task);
         try {
-            TaskExecutor<?, ?> taskExecutor = new ExecutionFactory<>(metaInfo).newInstance();
+            TaskExecutor<?, ?, ?> taskExecutor = new ExecutionFactory<>(metaInfo).newInstance();
             log.debug("taskExecutor:" + taskExecutor);
             return taskExecutor.initiate(task, statusCallback);
+        } catch (Exception e) {
+            log.error("Error while creating taskExecutor", e);
+            return false;
+        }
+    }
+
+    public boolean resume(Task task, StatusCallback statusCallback, TaskStat<?> taskStat) throws TeflonError {
+        MetaInfo metaInfo = mContainer.get(task.name());
+        if (metaInfo == null) {
+            throw new TeflonError(ErrorCode.TASK_UNAVAILABLE, "Task:" + task.name() +
+                    " not registered. Available tasks:" + mContainer.keys());
+        }
+        log.info("Executing task:{}", task);
+        try {
+            TaskExecutor<?, ?, ?> taskExecutor = new ExecutionFactory<>(metaInfo).newInstance();
+            log.debug("taskExecutor:" + taskExecutor);
+            return taskExecutor.resume(task, statusCallback, taskStat);
         } catch (Exception e) {
             log.error("Error while creating taskExecutor", e);
             return false;

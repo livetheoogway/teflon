@@ -11,12 +11,13 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class TaskStat {
+public class TaskStat<Progress> {
     private long countTotal;
     private long countOutputSinked;
     private long startTime;
     private long endTime;
     private String totalTime;
+    private Progress taskProgress;
 
     public TaskStat(long countTotal, long countOutputSinked) {
         this.countTotal = countTotal;

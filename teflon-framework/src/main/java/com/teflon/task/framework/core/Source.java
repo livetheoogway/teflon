@@ -1,12 +1,18 @@
 package com.teflon.task.framework.core;
 
-import java.util.List;
+import com.teflon.task.framework.core.meta.TaskStat;
 
 /**
  * @author tushar.naik
  * @version 1.0  10/08/17 - 6:05 PM
  */
-public interface Source<Input> extends Unit {
+public interface Source<Input, Progress> extends Unit {
+
+    /**
+     * resume a task
+     */
+    void resume(Task init, TaskStat<Progress> taskStat) throws Exception;
+
 
     /**
      * get a single InterimOutput from Source
@@ -15,5 +21,5 @@ public interface Source<Input> extends Unit {
      * @return Input
      * @throws Exception while getting input
      */
-    List<Input> getInput() throws Exception;
+    SourceInputs<Input, Progress> getInput() throws Exception;
 }

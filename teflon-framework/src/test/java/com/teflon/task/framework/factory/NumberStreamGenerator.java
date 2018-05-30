@@ -2,14 +2,17 @@ package com.teflon.task.framework.factory;
 
 import com.teflon.task.framework.core.Interpreter;
 import com.teflon.task.framework.core.Source;
+import com.teflon.task.framework.core.SourceInputs;
 import com.teflon.task.framework.core.Task;
+import com.teflon.task.framework.core.meta.TaskStat;
 import com.teflon.task.framework.declaration.annotated.InterpreterDeclaration;
 import com.teflon.task.framework.declaration.annotated.SinkDeclaration;
 import com.teflon.task.framework.declaration.annotated.SourceDeclaration;
 import com.teflon.task.framework.declaration.annotated.TaskDeclaration;
 import com.teflon.task.framework.impl.ConsoleSink;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,31 +28,46 @@ import java.util.stream.Collectors;
         interpreter = NumberStreamGenerator.class,
         sink = ConsoleSink.class,
         factoryType = FactoryType.INJECTION)
-public class NumberStreamGenerator implements Source<Integer>, Interpreter<Integer, String> {
+public class NumberStreamGenerator
+        implements Source<Integer, NumberStreamGenerator.NSProgress>, Interpreter<Integer, String> {
+
+    @AllArgsConstructor
+    class NSProgress {
+        @Getter
+        private int resumeFrom;
+    }
+
     private int i;
     private int max;
 
     @Override
-    public void init(Task init) throws Exception {
+    public void init(Task init) {
         NumberGeneratorTask taskGen = (NumberGeneratorTask) init;
         i = taskGen.getStart();
         max = taskGen.getEnd();
     }
 
     @Override
-    public List<Integer> getInput() throws Exception {
+    public void resume(Task init, TaskStat<NumberStreamGenerator.NSProgress> taskStat) {
+        NumberGeneratorTask taskGen = (NumberGeneratorTask) init;
+        i = taskStat.getTaskProgress().getResumeFrom();
+        max = taskGen.getEnd();
+    }
+
+    @Override
+    public SourceInputs<Integer, NSProgress> getInput() {
         if (i <= max)
-            return Collections.singletonList(i++);
+            return new SourceInputs<>(Collections.singletonList(i++), new NumberStreamGenerator.NSProgress(max / 2));
         return null;
     }
 
     @Override
     public List<String> interpret(List<Integer> integer) {
-        return integer.stream().map(k->"Iteration: " + integer).collect(Collectors.toList());
+        return integer.stream().map(k -> "Iteration: " + integer).collect(Collectors.toList());
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
     }
 
     @Override

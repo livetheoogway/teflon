@@ -14,14 +14,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @AllArgsConstructor
 @Slf4j
-public class ExecutionFactory<T, U> implements InstanceFactory<TaskExecutor<T, U>> {
+public class ExecutionFactory<T, V, U> implements InstanceFactory<TaskExecutor<T, V, U>> {
     private MetaInfo metaInfo;
 
     @Override
-    public TaskExecutor<T, U> newInstance() {
+    public TaskExecutor<T, V, U> newInstance() {
         log.info("TaskExecutor: " + metaInfo.toString());
-        return TaskExecutor.<T, U>builder()
-                .source((Source<T>) metaInfo.getSourceInstanceFactory().newInstance())
+        return TaskExecutor.<T, V, U>builder()
+                .source((Source<T, V>) metaInfo.getSourceInstanceFactory().newInstance())
                 .interpreter((Interpreter<T, U>) metaInfo.getInterpreterInstanceFactory().newInstance())
                 .sink((Sink<U>) metaInfo.getSinkInstanceFactory().newInstance())
                 .batchSize(metaInfo.getBatchSize())
