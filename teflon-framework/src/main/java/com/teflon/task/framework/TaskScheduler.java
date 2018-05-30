@@ -133,7 +133,7 @@ public final class TaskScheduler {
         }
     }
 
-    public boolean resumer(Task task, TaskStat<?> taskStat) throws TeflonError {
+    public boolean resume(Task task, TaskStat<?> taskStat) throws TeflonError {
         return resume(task, new StatusCallback() {
         }, taskStat);
     }
