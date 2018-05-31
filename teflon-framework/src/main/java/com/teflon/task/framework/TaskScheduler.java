@@ -19,7 +19,6 @@ import org.reflections.Reflections;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
@@ -148,13 +147,13 @@ public final class TaskScheduler {
      */
     public Future<Boolean> submit(Task task, StatusCallback statusCallback) {
         preconditions();
-        log.info("Submitting task:{}", task, UUID.randomUUID().toString());
+        log.info("Submitting task:{}", task);
         return executorService.submit(() -> trigger(task, statusCallback));
     }
 
     public Future<Boolean> submit(Task task, StatusCallback statusCallback, TaskStat<?> taskStat) {
         preconditions();
-        log.info("Submitting task:{}", task, UUID.randomUUID().toString());
+        log.info("Submitting task:{}", task);
         return executorService.submit(() -> resume(task, statusCallback, taskStat));
     }
 
