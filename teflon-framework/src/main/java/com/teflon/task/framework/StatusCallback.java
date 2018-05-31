@@ -12,24 +12,24 @@ import com.teflon.task.framework.core.meta.TaskStat;
  * @author tushar.naik
  * @version 1.0  02/10/17 - 8:30 PM
  */
-public interface StatusCallback {
+public interface StatusCallback<P> {
 
     /**
      * callback during init of the task
      */
-    default void onInit(Task task, TaskStat taskStat) {
+    default void onInit(Task task, TaskStat<P> taskStat) {
     }
 
     /**
      * callback during init of the task
      */
-    default void onResume(Task task, TaskStat taskStat) {
+    default void onResume(Task task, TaskStat<P> taskStat) {
     }
 
     /**
      * callback at regular intervals, when a batchSize is reached
      */
-    default void statusCallback(Task task, TaskStat taskStat) {
+    default void statusCallback(Task task, TaskStat<P> taskStat) {
     }
 
     /**
@@ -37,14 +37,14 @@ public interface StatusCallback {
      *
      * @return true if you wish to cancel the execution of the task
      */
-    default boolean isCancelled(Task task, TaskStat taskStat) {
+    default boolean isCancelled(Task task, TaskStat<P> taskStat) {
         return false;
     }
 
     /**
      * callback after completion of task
      */
-    default void onComplete(Task task, TaskStat taskStat) {
+    default void onComplete(Task task, TaskStat<P> taskStat) {
     }
 
     /**
