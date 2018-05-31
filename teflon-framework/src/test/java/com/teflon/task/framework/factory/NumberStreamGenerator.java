@@ -57,7 +57,7 @@ public class NumberStreamGenerator
     @Override
     public SourceInputs<Integer, NSProgress> getInput() {
         if (i <= max)
-            return new SourceInputs<>(Collections.singletonList(i++), new NumberStreamGenerator.NSProgress(max / 2));
+            return new SourceInputs<>(Collections.singletonList(i++), new NumberStreamGenerator.NSProgress(1));
         return null;
     }
 

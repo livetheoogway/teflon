@@ -10,6 +10,7 @@ import com.teflon.task.framework.factory.NumberStreamGenerator;
  * @version 1.0  30/05/18 - 11:37 AM
  */
 public interface TestUtil {
+
     static TaskScheduler getScheduler() {
         return TaskScheduler.builder()
                             .classPath("com.teflon.task.framework.factory")

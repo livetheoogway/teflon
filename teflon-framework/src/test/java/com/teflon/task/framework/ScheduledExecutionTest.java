@@ -28,7 +28,6 @@ public class ScheduledExecutionTest {
     public void testScheduledExecution() throws Exception {
         AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
-        random.nextInt(10);
 
         taskScheduler.scheduleAtFixedRate(() -> new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
@@ -45,7 +44,6 @@ public class ScheduledExecutionTest {
     public void testScheduledFixedExecution() throws Exception {
         AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
-        random.nextInt(10);
 
         taskScheduler.scheduleWithFixedDelay(() -> new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
@@ -62,7 +60,6 @@ public class ScheduledExecutionTest {
     public void testScheduleExecution() throws Exception {
         AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
-        random.nextInt(10);
 
         taskScheduler.schedule(() -> new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
@@ -98,7 +95,6 @@ public class ScheduledExecutionTest {
     public void testSubmitWithResume() {
         AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
-        random.nextInt(10);
 
         taskScheduler.trigger(new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
@@ -108,7 +104,7 @@ public class ScheduledExecutionTest {
         });
         long countPrevious = taskStat.get().getCountOutputSunk();
         System.out.println("countPrevious = " + countPrevious);
-        taskScheduler.resume(new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
+        taskScheduler.resume(new NumberGeneratorTask(1, random.nextInt(10) + 4), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
                 taskStat.set(t);
@@ -116,6 +112,5 @@ public class ScheduledExecutionTest {
         }, taskStat.get());
         System.out.println("countNow = " + taskStat.get().getCountOutputSunk());
         Assert.assertTrue(countPrevious < taskStat.get().getCountOutputSunk());
-
     }
 }
