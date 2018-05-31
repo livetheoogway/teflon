@@ -50,6 +50,6 @@ public interface StatusCallback<P> {
     /**
      * callback when an exception is thrown
      */
-    default void onError(Task task, TaskStat taskStat, Throwable e) {
+    default void onError(Task task, TaskStat<P> taskStat, Throwable e) {
     }
 }
