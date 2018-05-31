@@ -173,11 +173,11 @@ public class TaskExecutor<Input, Progress, Output> {
             inputs = sourceInputs.getInputs();
             taskStat.setTaskProgress(sourceInputs.getProgress());
             total += inputs.size();
+            taskStat.setCountTotal(total);
             List<Output> interpretedInputs = interpreter.interpret(inputs);
             if (interpretedInputs != null && !interpretedInputs.isEmpty()) {
                 sink.sink(interpretedInputs);
                 sinkCount += interpretedInputs.size();
-                taskStat.setCountTotal(total);
                 taskStat.setCountOutputSunk(sinkCount);
                 /* call updates consumer only if the number of interpreted inputs were > 1 (Prevents unnecessary noise)  */
                 if (interpretedInputs.size() > 1) {
