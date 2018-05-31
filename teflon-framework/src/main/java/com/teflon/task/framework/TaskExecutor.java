@@ -80,7 +80,7 @@ public class TaskExecutor<Input, Progress, Output> {
      * @return <code>true</code> if successfully executed the task
      * @throws TeflonError any error during task execution
      */
-    public boolean initiate(Task task, StatusCallback statusCallback) throws TeflonError {
+    public boolean initiate(Task task, StatusCallback<Progress> statusCallback) throws TeflonError {
         int lastBatchCount = -1;
 
         log.info("Starting to populate all values from source...");
@@ -122,7 +122,7 @@ public class TaskExecutor<Input, Progress, Output> {
         }
     }
 
-    public boolean resume(Task task, StatusCallback statusCallback, TaskStat taskStat) throws TeflonError {
+    public boolean resume(Task task, StatusCallback<Progress> statusCallback, TaskStat taskStat) throws TeflonError {
         int lastBatchCount = -1;
         log.info("Resuming task:{}", task);
         try {
