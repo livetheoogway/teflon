@@ -130,7 +130,7 @@ public class TaskExecutor<Input, Progress, Output> {
             source.resume(task, taskStat);
             statusCallback.onResume(task, taskStat);
 
-            sinkCount = taskStat.getCountOutputSinked();
+            sinkCount = taskStat.getCountOutputSunk();
             total = taskStat.getCountTotal();
             /* execute */
             executeTask(task, statusCallback, lastBatchCount, taskStat);
@@ -178,7 +178,7 @@ public class TaskExecutor<Input, Progress, Output> {
                 sink.sink(interpretedInputs);
                 sinkCount += interpretedInputs.size();
                 taskStat.setCountTotal(total);
-                taskStat.setCountOutputSinked(sinkCount);
+                taskStat.setCountOutputSunk(sinkCount);
                 /* call updates consumer only if the number of interpreted inputs were > 1 (Prevents unnecessary noise)  */
                 if (interpretedInputs.size() > 1) {
                     statusCallback.statusCallback(task, taskStat);
