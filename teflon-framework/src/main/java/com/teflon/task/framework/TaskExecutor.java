@@ -186,7 +186,7 @@ public class TaskExecutor<Input, Progress, Output> {
             }
             if (total / batchSize > lastBatchCount) {
                 lastBatchCount = (int) (total / batchSize);
-                log.info("Task:{} total:{} stat:{}", task.name(), total, taskStat);
+                log.info("Task:{} total:{} stat:{}", task.name(), total, loggableStatus(taskStat));
                 statusCallback.statusCallback(task, taskStat);
                 /* this is where we break the if the task was cancelled */
                 if (statusCallback.isCancelled(task, taskStat)) {
@@ -208,8 +208,13 @@ public class TaskExecutor<Input, Progress, Output> {
                 ", sink:" + sink +
                 ", count:" + sinkCount +
                 ", total:" + total +
-                ", taskStat:" + taskStat +
+                ", taskStat:" + loggableStatus(taskStat) +
                 ']';
+    }
+
+    private String loggableStatus(TaskStat taskStat) {
+        return String.format("[total:%s sunk:%s time:%s]", taskStat.getCountTotal(), taskStat.getCountOutputSunk(),
+                             taskStat.getElapsedTime());
     }
 }
 
