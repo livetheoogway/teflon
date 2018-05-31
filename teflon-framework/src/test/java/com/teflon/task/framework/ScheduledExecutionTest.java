@@ -30,7 +30,7 @@ public class ScheduledExecutionTest {
         Random random = new Random();
         random.nextInt(10);
 
-        taskScheduler.scheduleAtFixedRate(() -> new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+        taskScheduler.scheduleAtFixedRate(() -> new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
                 taskStat.set(t);
@@ -47,7 +47,7 @@ public class ScheduledExecutionTest {
         Random random = new Random();
         random.nextInt(10);
 
-        taskScheduler.scheduleWithFixedDelay(() -> new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+        taskScheduler.scheduleWithFixedDelay(() -> new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
                 taskStat.set(t);
@@ -64,7 +64,7 @@ public class ScheduledExecutionTest {
         Random random = new Random();
         random.nextInt(10);
 
-        taskScheduler.schedule(() -> new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+        taskScheduler.schedule(() -> new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
                 taskStat.set(t);
@@ -81,9 +81,7 @@ public class ScheduledExecutionTest {
     public void testSubmit() throws Exception {
         AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
-        random.nextInt(10);
-
-        taskScheduler.submit(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+        taskScheduler.submit(new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
                 taskStat.set(t);
@@ -102,7 +100,7 @@ public class ScheduledExecutionTest {
         Random random = new Random();
         random.nextInt(10);
 
-        taskScheduler.trigger(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+        taskScheduler.trigger(new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
                 taskStat.set(t);
