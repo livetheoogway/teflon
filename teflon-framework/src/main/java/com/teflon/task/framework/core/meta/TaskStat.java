@@ -13,15 +13,15 @@ import lombok.*;
 @ToString
 public class TaskStat<Progress> {
     private long countTotal;
-    private long countOutputSinked;
+    private long countOutputSunk;
     private long startTime;
     private long endTime;
     private String totalTime;
     private Progress taskProgress;
 
-    public TaskStat(long countTotal, long countOutputSinked) {
+    public TaskStat(long countTotal, long countOutputSunk) {
         this.countTotal = countTotal;
-        this.countOutputSinked = countOutputSinked;
+        this.countOutputSunk = countOutputSunk;
         start();
     }
 
@@ -53,7 +53,7 @@ public class TaskStat<Progress> {
         this.startTime = Math.min(startTime, taskStat.startTime);
         this.endTime = Math.max(endTime, taskStat.endTime);
         this.countTotal += taskStat.countTotal;
-        this.countOutputSinked += taskStat.countOutputSinked;
+        this.countOutputSunk += taskStat.countOutputSunk;
         this.totalTime = endTime - startTime + "ms";
     }
 }
