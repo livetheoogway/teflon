@@ -26,18 +26,14 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testScheduledExecution() throws Exception {
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
+        AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
 
         taskScheduler.scheduleAtFixedRate(() -> new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
-                if (taskStat.get() == null) {
-                    taskStat.set(t);
-                } else {
-                    taskStat.get().add(t);
-                }
+                taskStat.set(t);
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
 
@@ -47,18 +43,14 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testScheduledFixedExecution() throws Exception {
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
+        AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
 
         taskScheduler.scheduleWithFixedDelay(() -> new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
-                if (taskStat.get() == null) {
-                    taskStat.set(t);
-                } else {
-                    taskStat.get().add(t);
-                }
+                taskStat.set(t);
             }
         }, 20, 1000, TimeUnit.MILLISECONDS);
 
@@ -68,18 +60,14 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testScheduleExecution() throws Exception {
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
+        AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
 
         taskScheduler.schedule(() -> new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
-                if (taskStat.get() == null) {
-                    taskStat.set(t);
-                } else {
-                    taskStat.get().add(t);
-                }
+                taskStat.set(t);
             }
         }, 100, TimeUnit.MILLISECONDS);
         Thread.sleep(20);
@@ -91,18 +79,14 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testSubmit() throws Exception {
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
+        AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
 
         taskScheduler.submit(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
-                if (taskStat.get() == null) {
-                    taskStat.set(t);
-                } else {
-                    taskStat.get().add(t);
-                }
+                taskStat.set(t);
             }
         });
         Assert.assertTrue(taskStat.get() == null);
@@ -114,33 +98,26 @@ public class ScheduledExecutionTest {
 
     @Test
     public void testSubmitWithResume() {
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
+        AtomicReference<TaskStat<Void>> taskStat = new AtomicReference<>();
         Random random = new Random();
         random.nextInt(10);
 
         taskScheduler.trigger(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
-                if (taskStat.get() == null) {
-                    taskStat.set(t);
-                } else {
-                    taskStat.get().add(t);
-                }
+                taskStat.set(t);
             }
         });
-        long countPrevious = taskStat.get().getCountTotal();
-        taskScheduler.resume(new NumberGeneratorTask(1, random.nextInt(10) + 1), new StatusCallback() {
+        long countPrevious = taskStat.get().getCountOutputSunk();
+        System.out.println("countPrevious = " + countPrevious);
+        taskScheduler.resume(new NumberGeneratorTask(1, random.nextInt(10) + 2), new StatusCallback() {
             @Override
             public void statusCallback(Task task, TaskStat t) {
-                if (taskStat.get() == null) {
-                    taskStat.set(t);
-                } else {
-                    taskStat.get().add(t);
-                }
+                taskStat.set(t);
             }
         }, taskStat.get());
-        System.out.println("taskStat = " + taskStat);
-        Assert.assertTrue(countPrevious < taskStat.get().getCountTotal());
+        System.out.println("countNow = " + taskStat.get().getCountOutputSunk());
+        Assert.assertTrue(countPrevious < taskStat.get().getCountOutputSunk());
 
     }
 }

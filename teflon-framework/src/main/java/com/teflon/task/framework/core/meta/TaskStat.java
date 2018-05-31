@@ -48,12 +48,4 @@ public class TaskStat<Progress> {
         }
         return totalTime;
     }
-
-    public void add(TaskStat taskStat) {
-        this.startTime = Math.min(startTime, taskStat.startTime);
-        this.endTime = Math.max(endTime, taskStat.endTime);
-        this.countTotal += taskStat.countTotal;
-        this.countOutputSunk += taskStat.countOutputSunk;
-        this.totalTime = endTime - startTime + "ms";
-    }
 }
