@@ -31,7 +31,7 @@ public class TaskExecutor<Input, Progress, Output> {
     private static final int DEFAULT_BATCH_SIZE = 100;
 
     /* batch size when update callbacks are called + cancellation checked */
-    private int batchSize = DEFAULT_BATCH_SIZE;
+    private int batchSize;
 
     /* Source of Inputs */
     private Source<Input, Progress> source;
@@ -80,9 +80,7 @@ public class TaskExecutor<Input, Progress, Output> {
      * @return <code>true</code> if successfully executed the task
      * @throws TeflonError any error during task execution
      */
-    public boolean initiate(Task task, StatusCallback<Progress> statusCallback) throws TeflonError {
-        int lastBatchCount = -1;
-
+    public boolean initiate(Task task, StatusCallback<Progress> statusCallback) {
         log.info("Starting to populate all values from source...");
         taskStat.start();
         try {
@@ -93,7 +91,7 @@ public class TaskExecutor<Input, Progress, Output> {
             statusCallback.onInit(task, taskStat);
 
             /* execute task */
-            executeTask(task, statusCallback, lastBatchCount, taskStat);
+            executeTask(task, statusCallback, taskStat);
 
             /* close all actors */
             source.close();
@@ -122,8 +120,7 @@ public class TaskExecutor<Input, Progress, Output> {
         }
     }
 
-    public boolean resume(Task task, StatusCallback<Progress> statusCallback, TaskStat taskStat) throws TeflonError {
-        int lastBatchCount = -1;
+    public boolean resume(Task task, StatusCallback<Progress> statusCallback, TaskStat<Progress> taskStat) {
         log.info("Resuming task:{}", task);
         try {
             /* initiate all actors */
@@ -133,7 +130,7 @@ public class TaskExecutor<Input, Progress, Output> {
             sinkCount = taskStat.getCountOutputSunk();
             total = taskStat.getCountTotal();
             /* execute */
-            executeTask(task, statusCallback, lastBatchCount, taskStat);
+            executeTask(task, statusCallback, taskStat);
 
             /* close all actors */
             source.close();
@@ -162,8 +159,9 @@ public class TaskExecutor<Input, Progress, Output> {
         }
     }
 
-    private void executeTask(Task task, StatusCallback statusCallback, int lastBatchCount,
+    private void executeTask(Task task, StatusCallback<Progress> statusCallback,
                              TaskStat<Progress> taskStat) throws Exception {
+        long lastBatchCount = -1;
         List<Input> inputs;
         do {
             SourceInputs<Input, Progress> sourceInputs = source.getInput();
