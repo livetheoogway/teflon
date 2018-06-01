@@ -121,6 +121,7 @@ public class TaskExecutor<Input, Progress, Output> {
     }
 
     public boolean resume(Task task, StatusCallback<Progress> statusCallback, TaskStat<Progress> taskStat) {
+        taskStat.resume();
         log.info("Resuming task:{}", task);
         try {
             /* initiate all actors */

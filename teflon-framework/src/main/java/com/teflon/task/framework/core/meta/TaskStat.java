@@ -31,6 +31,11 @@ public class TaskStat<Progress> {
         this.totalTime = "";
     }
 
+    public void resume() {
+        this.endTime = -1;
+        this.totalTime = "";
+    }
+
     public void end() {
         if (endTime > 0) {
             throw new RuntimeException("End has already been called once");
