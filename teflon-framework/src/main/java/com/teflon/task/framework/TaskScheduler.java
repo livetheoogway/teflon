@@ -83,7 +83,7 @@ public final class TaskScheduler {
      * @return true if execution was successful
      * @throws TeflonError if there was an error
      */
-    public boolean trigger(Task task, StatusCallback statusCallback) throws TeflonError {
+    public boolean trigger(Task task, StatusCallback statusCallback) {
         MetaInfo metaInfo = mContainer.get(task.name());
         if (metaInfo == null) {
             throw new TeflonError(ErrorCode.TASK_UNAVAILABLE, "Task:" + task.name() +
@@ -100,7 +100,7 @@ public final class TaskScheduler {
         }
     }
 
-    public boolean trigger(Task task) throws TeflonError {
+    public boolean trigger(Task task) {
         return trigger(task, new StatusCallback() {
         });
     }
@@ -115,7 +115,7 @@ public final class TaskScheduler {
      * @throws TeflonError while resuming task
      * @see TaskStat#getTaskProgress()
      */
-    public boolean resume(Task task, StatusCallback statusCallback, TaskStat<?> taskStat) throws TeflonError {
+    public boolean resume(Task task, StatusCallback statusCallback, TaskStat taskStat) {
         MetaInfo metaInfo = mContainer.get(task.name());
         if (metaInfo == null) {
             throw new TeflonError(ErrorCode.TASK_UNAVAILABLE, "Task:" + task.name() +
@@ -132,7 +132,7 @@ public final class TaskScheduler {
         }
     }
 
-    public boolean resume(Task task, TaskStat<?> taskStat) throws TeflonError {
+    public boolean resume(Task task, TaskStat<?> taskStat) {
         return resume(task, new StatusCallback() {
         }, taskStat);
     }
@@ -185,8 +185,8 @@ public final class TaskScheduler {
      * @param timeUnit       the time unit of the initialDelay and interval parameters
      * @return Future instance of the submission
      */
-    public ScheduledFuture<?> scheduleAtFixedRate(Supplier<Task> task, StatusCallback statusCallback, long initialDelay,
-                                                  long interval, TimeUnit timeUnit) {
+    public ScheduledFuture scheduleAtFixedRate(Supplier<Task> task, StatusCallback statusCallback, long initialDelay,
+                                               long interval, TimeUnit timeUnit) {
         preconditions();
         log.info("Scheduling at Fixed Rate- task:{}", task);
         return executorService.scheduleAtFixedRate(() -> trigger(task.get(), statusCallback), initialDelay, interval, timeUnit);
@@ -205,9 +205,9 @@ public final class TaskScheduler {
      * @param timeUnit       the time unit of the initialDelay and delay parameters
      * @return Future instance of the submission
      */
-    public ScheduledFuture<?> scheduleWithFixedDelay(Supplier<Task> task, StatusCallback statusCallback,
-                                                     long initialDelay, long delay,
-                                                     TimeUnit timeUnit) {
+    public ScheduledFuture scheduleWithFixedDelay(Supplier<Task> task, StatusCallback statusCallback,
+                                                  long initialDelay, long delay,
+                                                  TimeUnit timeUnit) {
         preconditions();
         return executorService.scheduleWithFixedDelay(() -> trigger(task.get(), statusCallback), initialDelay, delay, timeUnit);
     }
