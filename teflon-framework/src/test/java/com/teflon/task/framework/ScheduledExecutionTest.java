@@ -102,7 +102,7 @@ public class ScheduledExecutionTest {
                 taskStat.set(t);
             }
         });
-        long countPrevious = taskStat.get().getCountOutputSunk();
+        long countPrevious = taskStat.get().getCountTotal();
         System.out.println("countPrevious = " + countPrevious);
         taskScheduler.resume(new NumberGeneratorTask(1, random.nextInt(10) + 4), new StatusCallback() {
             @Override
@@ -110,7 +110,7 @@ public class ScheduledExecutionTest {
                 taskStat.set(t);
             }
         }, taskStat.get());
-        System.out.println("countNow = " + taskStat.get().getCountOutputSunk());
+        System.out.println("countNow = " + taskStat.get().getCountTotal());
         Assert.assertTrue(countPrevious < taskStat.get().getCountOutputSunk());
     }
 }

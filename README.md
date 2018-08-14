@@ -18,7 +18,7 @@ Use the following maven dependency for bare minimal framework:
 <dependency>
     <groupId>com.phonepe.teflon</groupId>
     <artifactId>teflon-framework</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
 </dependency>
 ```
 Use the following maven dependency for actor based Scheduler:
@@ -26,7 +26,7 @@ Use the following maven dependency for actor based Scheduler:
 <dependency>
     <groupId>com.phonepe.teflon</groupId>
     <artifactId>teflon-rmq-actor</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
 </dependency>
 ``` 
 
