@@ -19,32 +19,35 @@ import java.util.List;
  * 2. Regular update callbacks (TaskStatus)
  * 3. Regular check if task has been cancelled
  * 4. Handle exceptions from any of the Actors
- * 5. Close Abort actors according to the state of the execution
+ * 5. Close Abort actors according to the state of the execution.
  * The execution will continue until Source produces some inputs.
  * Execution stops the moment the Source produces null or Empty list of Inputs
  * <p>
  * PS: All Actors involved {@link Source}, {@link Interpreter}, {@link Sink} need to be threadsafe
  *
+ * @param <I> Input
+ * @param <P> Progress
+ * @param <O> Output
  * @author tushar.naik
  * @version 1.0  10/08/17 - 6:05 PM
  */
 @Slf4j
-public class TaskExecutor<Input, Progress, Output> {
+public class TaskExecutor<I, P, O> {
 
     /* default batch size */
     private static final int DEFAULT_BATCH_SIZE = 100;
 
     /* batch size when update callbacks are called + cancellation checked */
-    private int batchSize;
+    private final int batchSize;
 
     /* Source of Inputs */
-    private Source<Input, Progress> source;
+    private final Source<I, P> source;
 
     /* Source input interpreter */
-    private Interpreter<Input, Output> interpreter;
+    private final Interpreter<I, O> interpreter;
 
     /* Sink for Inputs */
-    private Sink<Output> sink;
+    private final Sink<O> sink;
 
     /* count of Inputs sent to Sink, during the execution */
     private long sinkCount = 0;
@@ -53,7 +56,7 @@ public class TaskExecutor<Input, Progress, Output> {
     private long total = 0;
 
     /* stats collector */
-    private TaskStat<Progress> taskStat;
+    private final TaskStat<P> taskStat;
 
     /**
      * @param source      impl of a Source and produces Input or null
@@ -62,8 +65,8 @@ public class TaskExecutor<Input, Progress, Output> {
      * @param batchSize   batch size
      */
     @Builder
-    public TaskExecutor(Source<Input, Progress> source, Interpreter<Input, Output> interpreter,
-                        Sink<Output> sink, int batchSize) {
+    public TaskExecutor(Source<I, P> source, Interpreter<I, O> interpreter,
+                        Sink<O> sink, int batchSize) {
         this.source = source;
         this.interpreter = interpreter;
         this.sink = sink;
@@ -88,7 +91,7 @@ public class TaskExecutor<Input, Progress, Output> {
      * @return <code>true</code> if successfully executed the task
      * @throws TeflonError any error during task execution
      */
-    public boolean initiate(Task task, StatusCallback<Progress> statusCallback) {
+    public boolean initiate(Task task, StatusCallback<P> statusCallback) {
         log.info("Starting to populate all values from source...");
         taskStat.start();
         try {
@@ -128,7 +131,7 @@ public class TaskExecutor<Input, Progress, Output> {
         }
     }
 
-    public boolean resume(Task task, StatusCallback<Progress> statusCallback, TaskStat<Progress> taskStat) {
+    public boolean resume(Task task, StatusCallback<P> statusCallback, TaskStat<P> taskStat) {
         taskStat.resume();
         log.info("Resuming task:{}", task);
         try {
@@ -168,20 +171,20 @@ public class TaskExecutor<Input, Progress, Output> {
         }
     }
 
-    private void executeTask(Task task, StatusCallback<Progress> statusCallback,
-                             TaskStat<Progress> taskStat) throws Exception {
+    private void executeTask(Task task, StatusCallback<P> statusCallback,
+                             TaskStat<P> taskStat) throws Exception {
         long lastBatchCount = -1;
-        List<Input> inputs;
+        List<I> inputs;
         do {
-            SourceInputs<Input, Progress> sourceInputs = source.getInput();
-            if (sourceInputs == null || sourceInputs.getInputs() == null) {
+            SourceInputs<I, P> sourceInputs = source.getInput();
+            if (sourceInputs == null || sourceInputs.inputs() == null) {
                 break;
             }
-            inputs = sourceInputs.getInputs();
-            taskStat.setTaskProgress(sourceInputs.getProgress());
+            inputs = sourceInputs.inputs();
+            taskStat.setTaskProgress(sourceInputs.progress());
             total += inputs.size();
             taskStat.setCountTotal(total);
-            List<Output> interpretedInputs = interpreter.interpret(inputs);
+            List<O> interpretedInputs = interpreter.interpret(inputs);
             if (interpretedInputs != null && !interpretedInputs.isEmpty()) {
                 sink.sink(interpretedInputs);
                 sinkCount += interpretedInputs.size();
@@ -221,7 +224,7 @@ public class TaskExecutor<Input, Progress, Output> {
                 ']';
     }
 
-    private String loggableStatus(TaskStat taskStat) {
+    private String loggableStatus(TaskStat<P> taskStat) {
         return String.format("[total:%s sunk:%s time:%s]", taskStat.getCountTotal(), taskStat.getCountOutputSunk(),
                              taskStat.getElapsedTime());
     }

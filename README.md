@@ -1,10 +1,11 @@
-<h2 align="center">Teflon</h2>
-<p align="center">
-<a href="https://gitlab.phonepe.com/Naik/teflon/commits/master"><img alt="build status" src="https://gitlab.phonepe.com/Naik/teflon/badges/master/build.svg" /></a>
-<a href="https://gitlab.phonepe.com/Naik/teflon/commits/master"><img alt="coverage report" src="https://gitlab.phonepe.com/Naik/teflon/badges/master/coverage.svg" /></a>
-</p> 
-
 # TEFLON
+
+[![Java CI with Maven](https://github.com/livetheoogway/teflon/actions/workflows/actions.yml/badge.svg)](https://github.com/livetheoogway/teflon/actions/workflows/actions.yml)
+[![Release](https://img.shields.io/maven-central/v/io.github.livetheoogway/teflon)](https://s01.oss.sonatype.org/content/repositories/releases/io/github/livetheoogway/teflon/)
+[![License](https://img.shields.io/github/license/livetheoogway/teflon)](https://github.com/livetheoogway/teflon/blob/master/LICENSE)
+![Coverage](.github/badges/jacoco.svg)
+![Coverage](.github/badges/branches.svg)
+
 #### Task Execution Framework with Little Orchestration Needed   
 
 A framework that has the following features:
@@ -19,7 +20,7 @@ Use the following maven dependency for bare minimal framework:
 <dependency>
     <groupId>com.livetheoogway.teflon</groupId>
     <artifactId>teflon-framework</artifactId>
-    <version>1.2</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 Use the following maven dependency for actor based Scheduler:
@@ -27,7 +28,7 @@ Use the following maven dependency for actor based Scheduler:
 <dependency>
     <groupId>com.livetheoogway.teflon</groupId>
     <artifactId>teflon-rmq-actor</artifactId>
-    <version>1.2</version>
+    <version>1.0.0</version>
 </dependency>
 ``` 
 
@@ -107,7 +108,7 @@ An finally a ```TaskDeclaration```
 Build A <b>Scheduler</b> that will allow you to trigger the task  
 ```java
 TaskScheduler taskScheduler = TaskScheduler.builder()
-                               .classPath("com.teflon.task.framework.factory")
+                               .classPath("com.livetheoogway.teflon.framework.factory")
                                .injectorProvider(() -> Guice.createInjector(<your module>))
                                .build();
 // run it

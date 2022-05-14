@@ -1,3 +1,17 @@
+/*
+ * Copyright 2022. Live the Oogway, Tushar Naik
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 package com.livetheoogway.teflon.framework.container;
 
 import com.google.common.collect.Maps;
@@ -13,10 +27,10 @@ import java.util.Set;
  */
 public class MapContainer<T> implements IContainer<String, T> {
 
-    private Map<String, T> taskMappings = Maps.newHashMap();
+    private final Map<String, T> taskMappings = Maps.newHashMap();
 
     @Override
-    public void register(String name, T metaInfo) {
+    public void register(final String name, final T metaInfo) {
         if (taskMappings.containsKey(name)) {
             throw new TeflonError(ErrorCode.MULTIPLE_MAPPING_ERROR, "Mapping already exists with the name:" + name);
         }
@@ -24,12 +38,12 @@ public class MapContainer<T> implements IContainer<String, T> {
     }
 
     @Override
-    public T get(String name) {
+    public T get(final String name) {
         return taskMappings.get(name);
     }
 
     @Override
-    public Set<String> keys(){
+    public Set<String> keys() {
         return taskMappings.keySet();
     }
 }

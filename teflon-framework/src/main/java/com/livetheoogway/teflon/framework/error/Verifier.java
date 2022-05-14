@@ -1,3 +1,17 @@
+/*
+ * Copyright 2022. Live the Oogway, Tushar Naik
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 package com.livetheoogway.teflon.framework.error;
 
 import com.livetheoogway.teflon.framework.core.Interpreter;
@@ -21,7 +35,7 @@ public interface Verifier {
      *
      * @param taskActorDeclaration task declaration
      */
-    static void verify(TaskActorDeclaration taskActorDeclaration) {
+    static void verify(final TaskActorDeclaration taskActorDeclaration) {
         verify(taskActorDeclaration.getName(),
                taskActorDeclaration.getSource(),
                taskActorDeclaration.getInterpreter(),
@@ -39,10 +53,10 @@ public interface Verifier {
      * @param interpreter interpreter class
      * @param sink        sink class
      */
-    static void verify(String name,
-                       Class<? extends Source> source,
-                       Class<? extends Interpreter> interpreter,
-                       Class<? extends Sink> sink) {
+    static void verify(final String name,
+                       final Class<? extends Source<?, ?>> source,
+                       final Class<? extends Interpreter<?, ?>> interpreter,
+                       final Class<? extends Sink<?>> sink) {
         checkNull(source, message(name, source, interpreter, sink, "Source cannot be null"));
         checkNull(interpreter, message(name, source, interpreter, sink, "Interpreter cannot be null"));
         checkNull(sink, message(name, source, interpreter, sink, "Sink cannot be null"));
@@ -67,11 +81,11 @@ public interface Verifier {
         }
     }
 
-    static String message(String name,
-                          Class<? extends Source> source,
-                          Class<? extends Interpreter> interpreter,
-                          Class<? extends Sink> sink,
-                          String message) {
+    static String message(final String name,
+                          final Class<? extends Source<?, ?>> source,
+                          final Class<? extends Interpreter<?, ?>> interpreter,
+                          final Class<? extends Sink<?>> sink,
+                          final String message) {
         return String.format("declaration:%s source:%s interpreter:%s sink:%s error:%s", name, source, interpreter,
                              sink, message);
     }
