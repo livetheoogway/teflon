@@ -4,7 +4,8 @@
 <a href="https://gitlab.phonepe.com/Naik/teflon/commits/master"><img alt="coverage report" src="https://gitlab.phonepe.com/Naik/teflon/badges/master/coverage.svg" /></a>
 </p> 
 
-#### Task Execution Framework with Little Orchestration Needed aka TEFLON 
+# TEFLON
+#### Task Execution Framework with Little Orchestration Needed   
 
 A framework that has the following features:
 - Registration of a bunch of Task Orchestration flows of execution during startup.
@@ -16,7 +17,7 @@ A framework that has the following features:
 Use the following maven dependency for bare minimal framework:
 ```
 <dependency>
-    <groupId>com.phonepe.teflon</groupId>
+    <groupId>com.livetheoogway.teflon</groupId>
     <artifactId>teflon-framework</artifactId>
     <version>1.2</version>
 </dependency>
@@ -24,7 +25,7 @@ Use the following maven dependency for bare minimal framework:
 Use the following maven dependency for actor based Scheduler:
 ```
 <dependency>
-    <groupId>com.phonepe.teflon</groupId>
+    <groupId>com.livetheoogway.teflon</groupId>
     <artifactId>teflon-rmq-actor</artifactId>
     <version>1.2</version>
 </dependency>
