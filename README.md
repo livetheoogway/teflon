@@ -1,7 +1,7 @@
 # TEFLON
 
 [![Java CI with Maven](https://github.com/livetheoogway/teflon/actions/workflows/actions.yml/badge.svg)](https://github.com/livetheoogway/teflon/actions/workflows/actions.yml)
-[![Release](https://img.shields.io/maven-central/v/io.github.livetheoogway/teflon)](https://s01.oss.sonatype.org/content/repositories/releases/io/github/livetheoogway/teflon/)
+[![Release](https://img.shields.io/maven-central/v/com.livetheoogway.teflon/teflon)](https://s01.oss.sonatype.org/content/repositories/releases/com/livetheoogway/teflon/)
 [![License](https://img.shields.io/github/license/livetheoogway/teflon)](https://github.com/livetheoogway/teflon/blob/master/LICENSE)
 ![Coverage](.github/badges/jacoco.svg)
 ![Coverage](.github/badges/branches.svg)
