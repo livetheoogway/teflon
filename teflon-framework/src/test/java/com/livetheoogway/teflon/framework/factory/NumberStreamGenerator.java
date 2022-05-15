@@ -45,11 +45,7 @@ import java.util.stream.Collectors;
 public class NumberStreamGenerator
         implements Source<Integer, NumberStreamGenerator.NSProgress>, Interpreter<Integer, String> {
 
-    @AllArgsConstructor
-    class NSProgress {
-        @Getter
-        private int resumeFrom;
-    }
+    public record NSProgress(int resumeFrom) {}
 
     private int i;
     private int max;
@@ -64,14 +60,15 @@ public class NumberStreamGenerator
     @Override
     public void resume(Task task, TaskStat<NSProgress> taskStat) {
         NumberGeneratorTask taskGen = (NumberGeneratorTask) task;
-        i = taskStat.getTaskProgress().getResumeFrom();
+        i = taskStat.getTaskProgress().resumeFrom();
         max = taskGen.getEnd();
     }
 
     @Override
     public SourceInputs<Integer, NSProgress> getInput() {
-        if (i <= max)
+        if (i <= max) {
             return new SourceInputs<>(Collections.singletonList(i++), new NumberStreamGenerator.NSProgress(1));
+        }
         return null;
     }
 

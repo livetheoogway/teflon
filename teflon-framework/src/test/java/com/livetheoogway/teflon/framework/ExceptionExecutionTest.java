@@ -17,6 +17,7 @@ package com.livetheoogway.teflon.framework;
 import com.livetheoogway.teflon.framework.core.Task;
 import com.livetheoogway.teflon.framework.core.meta.TaskStat;
 import com.livetheoogway.teflon.framework.factory.NumberGeneratorTask;
+import com.livetheoogway.teflon.framework.factory.NumberStreamGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,51 +40,56 @@ class ExceptionExecutionTest {
 
     @Test
     void testCancellation() {
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
-        assertFalse(taskScheduler.trigger(new NumberGeneratorTask(1, 10), new StatusCallback() {
-            int i = 1;
+        AtomicReference<TaskStat<NumberStreamGenerator.NSProgress>> taskStat = new AtomicReference<>();
+        assertFalse(taskScheduler.trigger(
+                new NumberGeneratorTask(1, 10),
+                new StatusCallback<NumberStreamGenerator.NSProgress>() {
+                    int i = 1;
 
-            @Override
-            public void statusCallback(Task task, TaskStat taskStats) {
-                taskStat.set(taskStats);
-            }
+                    @Override
+                    public void statusCallback(final Task task,
+                                               final TaskStat<NumberStreamGenerator.NSProgress> taskStats) {
+                        taskStat.set(taskStats);
+                    }
 
-            @Override
-            public boolean isCancelled(Task task, TaskStat taskStat) {
-                return i++ >= 5;
-            }
-        }));
-        System.out.println("taskStat = " + taskStat);
-        assertEquals(taskStat.get().getCountTotal(), 5);
+                    @Override
+                    public boolean isCancelled(Task task,
+                                               TaskStat<NumberStreamGenerator.NSProgress> taskStat) {
+                        return i++ >= 5;
+                    }
+                }));
+        assertEquals(5, taskStat.get().getCountTotal());
     }
 
     @Test
-    public void testException() {
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
+    void testException() {
+        AtomicReference<TaskStat<NumberStreamGenerator.NSProgress>> taskStat = new AtomicReference<>();
         AtomicBoolean exceptionCalled = new AtomicBoolean(false);
-        assertFalse(taskScheduler.trigger(new NumberGeneratorTask(1, 10), new StatusCallback() {
-            int i = 1;
+        assertFalse(taskScheduler.trigger(
+                new NumberGeneratorTask(1, 10),
+                new StatusCallback<NumberStreamGenerator.NSProgress>() {
+                    int i = 1;
 
-            @Override
-            public void statusCallback(Task task, TaskStat taskStats) {
-                taskStat.set(taskStats);
-            }
+                    @Override
+                    public void statusCallback(Task task, TaskStat<NumberStreamGenerator.NSProgress> taskStats) {
+                        taskStat.set(taskStats);
+                    }
 
-            @Override
-            public boolean isCancelled(Task task, TaskStat taskStat) {
-                if (i++ >= 5) {
-                    throw new RuntimeException("");
-                }
-                return false;
-            }
+                    @Override
+                    public boolean isCancelled(Task task, TaskStat<NumberStreamGenerator.NSProgress> taskStat) {
+                        if (i++ >= 5) {
+                            throw new RuntimeException("");
+                        }
+                        return false;
+                    }
 
-            @Override
-            public void onError(Task task, TaskStat taskStat, Throwable e) {
-                assertTrue(e instanceof RuntimeException);
-                exceptionCalled.set(true);
-            }
-        }));
-        assertEquals(taskStat.get().getCountTotal(), 5);
+                    @Override
+                    public void onError(Task task, TaskStat<NumberStreamGenerator.NSProgress> taskStat, Throwable e) {
+                        assertTrue(e instanceof RuntimeException);
+                        exceptionCalled.set(true);
+                    }
+                }));
+        assertEquals(5, taskStat.get().getCountTotal());
         assertTrue(exceptionCalled.get());
     }
 }

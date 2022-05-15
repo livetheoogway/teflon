@@ -65,20 +65,20 @@ class TaskSchedulerExceptionScenariosTest {
                                      .sink(ConsoleSink.class)
                                      .build())
                 .build();
-        AtomicReference<TaskStat> taskStat = new AtomicReference<>();
-        assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 5), new StatusCallback() {
+        AtomicReference<TaskStat<NumberStreamGenerator.NSProgress>> taskStat = new AtomicReference<>();
+        assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 5), new StatusCallback<NumberStreamGenerator.NSProgress>() {
             @Override
-            public void statusCallback(Task task, TaskStat taskStats) {
+            public void statusCallback(Task task, TaskStat<NumberStreamGenerator.NSProgress> taskStats) {
                 taskStat.set(taskStats);
             }
         }));
-        assertEquals(taskStat.get().getCountTotal(), 5);
-        assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 3), new StatusCallback() {
+        assertEquals(5, taskStat.get().getCountTotal());
+        assertTrue(taskScheduler.trigger(new NumberGeneratorTask(1, 3), new StatusCallback<NumberStreamGenerator.NSProgress>() {
             @Override
-            public void statusCallback(Task task, TaskStat taskStats) {
+            public void statusCallback(Task task, TaskStat<NumberStreamGenerator.NSProgress> taskStats) {
                 taskStat.set(taskStats);
             }
         }));
-        assertEquals(taskStat.get().getCountTotal(), 3);
+        assertEquals(3, taskStat.get().getCountTotal());
     }
 }

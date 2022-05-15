@@ -20,6 +20,7 @@ import com.livetheoogway.teflon.framework.TaskScheduler;
 import com.livetheoogway.teflon.framework.core.Task;
 import io.appform.dropwizard.actors.ConnectionRegistry;
 import io.appform.dropwizard.actors.actor.Actor;
+import io.appform.dropwizard.actors.actor.MessageMetadata;
 import io.appform.dropwizard.actors.exceptionhandler.ExceptionHandlingFactory;
 import io.appform.dropwizard.actors.retry.RetryStrategyFactory;
 import lombok.Builder;
@@ -54,7 +55,7 @@ public class TaskActor<T extends Enum<T>, M extends Task> extends Actor<T, M> {
     }
 
     @Override
-    protected final boolean handle(M message) throws Exception {
+    protected final boolean handle(M message, MessageMetadata messageMetadata) {
         return taskScheduler.trigger(message, statusCallback());
     }
 }

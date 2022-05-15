@@ -120,7 +120,7 @@ public class TaskExecutor<I, P, O> {
             taskStat.end();
             statusCallback.onError(task, taskStat, e);
             return false;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("!!! \\\\_(- -)_//  Ran into problems while running task. Aborting.. ", e);
             source.abort();
             interpreter.abort();
@@ -160,7 +160,7 @@ public class TaskExecutor<I, P, O> {
             taskStat.end();
             statusCallback.onError(task, taskStat, e);
             return false;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("!!! \\\\_(- -)_//  Ran into problems while running task. Aborting.. ", e);
             source.abort();
             interpreter.abort();

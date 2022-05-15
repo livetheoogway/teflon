@@ -34,7 +34,7 @@ class MapContainerTest {
         mapContainer.register("key3", 345);
         mapContainer.register("key4", 456);
 
-        assertEquals(mapContainer.get("key3").intValue(), 345);
+        assertEquals(345, mapContainer.get("key3").intValue());
         assertEquals(mapContainer.keys(), Sets.newHashSet("key1", "key2", "key3", "key4"));
     }
 
