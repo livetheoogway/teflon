@@ -12,8 +12,8 @@
     <artifactId>teflon-framework</artifactId>
 
     <properties>
-        <guice.version>5.1.0</guice.version>
-        <awaitility.version>4.2.0</awaitility.version>
+        <guice.version>7.0.0</guice.version>
+        <awaitility.version>4.2.2</awaitility.version>
     </properties>
 
     <dependencies>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>0.10.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
